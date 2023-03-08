@@ -1,0 +1,38 @@
+@HOST = http://localhost:8000/api/v1/auth
+
+### sign up
+POST {{HOST}}/signup
+Content-Type: application/json
+
+{
+  "email":"baotrandinh.ute@gmail.com",
+  "name":"bao tran",
+  "nickName":"kuro",
+  "gender":"male",
+  "birthDay":"2000-12-04",
+  "password":"123bao@@45"
+}
+
+### active account
+GET {{HOST}}/signup/active?token=sdfsfsd
+
+{}
+
+### login
+POST {{HOST}}/login
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJhb3RyYW5kaW5oLnV0ZUBnbWFpbC5jb20ifQ.JHLsa0zZ2wP8Psg35sv5oA4QE3MWx86ERfnR2HlrPXQ
+
+{
+  "email":"baotrandinh.ute@gmail.com",
+  "password":"123bao@@45"
+}
+
+### request register seller
+GET {{HOST}}/seller/register
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDA2YjM5NDJkOGZkNjZmZjViZTc1ODAiLCJyb2xlIjoidXNlciIsImlhdCI6MTY3ODI0MzAzOSwiZXhwIjoxNjc4MjQ2NjM5fQ.QAmcqFKY6KpMFV9-IyGV5MLWJTZfMOxvXCcRWWadcxI
+
+{}
+
+### check token exists
+GET {{HOST}}
