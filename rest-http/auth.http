@@ -30,9 +30,67 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJhb3RyY
 
 ### request register seller
 GET {{HOST}}/seller/register
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDA2YjM5NDJkOGZkNjZmZjViZTc1ODAiLCJyb2xlIjoidXNlciIsImlhdCI6MTY3ODI0MzAzOSwiZXhwIjoxNjc4MjQ2NjM5fQ.QAmcqFKY6KpMFV9-IyGV5MLWJTZfMOxvXCcRWWadcxI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDA2YjM5NDJkOGZkNjZmZjViZTc1ODAiLCJyb2xlIjoidXNlciIsImlhdCI6MTY3ODMyNTk5MiwiZXhwIjoxNjc4MzI5NTkyfQ.gk9gpC9mouvljaY7SItSbtJcjq06vtWBWs_h8sRWsBo
 
 {}
 
+### register seller
+POST {{HOST}}/seller/create
+Content-Type: application/json
+
+{
+  "token":"175eceba-a36d-4aad-9fd5-1df3476048c2",
+  "name":"Test Shop",
+  "phone":"0329460523",
+  "address":[{
+    "location":"12 dien bien phu"
+  }],
+  "logo":"agdasgdj",
+  "slogan":"Just do it!"
+}
+
 ### check token exists
-GET {{HOST}}
+GET {{HOST}}/token/check?token=175eceba-a36d-4aad-9fd5-1df3476048c2
+
+### send email reset password
+POST {{HOST}}/password/email
+Content-Type: application/json
+
+{
+  "email":"baotrandinh.ute@gmail.com"
+}
+
+### reset password by token
+POST {{HOST}}/password/reset
+Content-Type: application/json
+
+{
+  "token":"b142514a-7a3f-4ed1-baa9-bf91f8df178a",
+  "password":"123bao@@45"
+}
+
+### refresh token
+POST {{HOST}}/login/refresh
+Content-Type: application/json
+
+{
+  "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDA2YjM5NDJkOGZkNjZmZjViZTc1ODAiLCJyb2xlIjoidXNlciIsImlhdCI6MTY3ODMyNTk5MiwiZXhwIjoxNjc4MzI5NTkyfQ.gk9gpC9mouvljaY7SItSbtJcjq06vtWBWs_h8sRWsBo"
+}
+
+### google login
+POST {{HOST}}/oauth/google
+Content-Type: application/json
+
+{
+  
+}
+
+### add product test
+POST http://localhost:8000/api/v1/product/add
+Content-Type: application/json
+Authorization: Bearer sdasInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDA2YjM5NDJkOGZkNjZmZjViZTc1ODAiLCJyb2xlIjoidXNlciIsImlhdCI6MTY3ODMyNTk5MiwiZXhwIjoxNjc4MzI5NTkyfQ.gk9gpC9mouvljaY7SItSbtJcjq06vtWBWs_h8sRWsBo
+
+{
+
+}
+

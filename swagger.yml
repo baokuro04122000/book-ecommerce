@@ -1,0 +1,1574 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: http://localhost:8000/api/v1
+info:
+  description: This is a BT API document
+  version: 1.0.1
+  title: BT API document
+  contact:
+    email: baotrandinh100@gmail.com
+  license:
+    name: Apache 2.0
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+tags:
+  - name: Auth
+    description: Authentication
+  - name: Product
+    description: Product
+  - name: Admin
+    description: Admin
+  - name: Seller
+    description: Seller
+  - name: Shipper
+    description: Shipper
+  - name: WithDraw Request
+    description: WithDraw Request
+
+paths:
+  /auth/login:
+    post:
+      security: []
+      tags:
+        - Auth
+      description: |
+        User Login by Email and Password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCredentials"
+        description: email and password
+      responses:
+        "200":
+          description: login successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserCredentialResponse"
+        "400":
+          description: invalid email or password format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: incorrect email or password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      description: User sign up an local account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserSignUp"
+      responses:
+        "200":
+          description: Server will send an email to user to active this account then it sets a cookie with the value {"active_account":false, expired:60s}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnnouceSuccess"
+        "400":
+          description: errors of the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                
+  
+  /auth/seller/register:
+    get:
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+      description: send request to sign up seller
+      responses:
+        "200":
+          description: Server will send an email to user to active this account
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnnouceSuccess"
+        "404":
+          description: errors of the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  
+  /auth/token/check:
+    get:
+      tags:
+        - Auth
+      description: check token expire or exists
+      responses:
+        "200":
+          description: Server will send a notification
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnnouceSuccess"
+        "400":
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: errors of the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  
+  /auth/seller/create:
+    post:
+      tags:
+        - Auth
+      description: create a new seller
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserSignUp"
+      responses:
+        "200":
+          description: Server will send a notification
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnnouceSuccess"
+        "400":
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: errors of the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                
+  /auth/delete-files:
+    post:
+      tags:
+        - Auth
+      description: Delete file by token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteImagesRequest"
+      responses:
+        "200":
+          description: Server will send an email to the email of user to access the register seller page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnnouceSuccess"
+        "400":
+          description: errors of the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  
+  
+  /auth/password/email:
+    post:
+      tags:
+        - Auth
+      description: Send mail to reset password 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordRequest"
+      responses:
+        "200":
+          description: Server will send Link reset password to your email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnnouceSuccess"
+        "400":
+            description: Invalid Email Format/Email is not Registered
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+        "500":
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"  
+  
+  /auth/password/reset:
+    post:
+      tags:
+        - Auth
+      description: Token matched then server will send for you verify token to reset password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordRequest"
+      responses:
+        "200":
+          description: Server will send verify code to you, then you get it  to reset password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnnouceSuccess"
+        "400":
+            description: bad request
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+        "500":
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+  
+  /auth/login/refresh:
+    post:
+      tags:
+        - Auth
+      description: Refresh token when access token is expired
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequest"
+      responses:
+        "200":
+          description: return a new payload + access_token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserCredentials"
+        "400":
+          description: error token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  
+  /auth/oauth/google:
+    get:
+      tags:
+        - Auth
+      description: Login by google account
+      responses:
+        "200":
+          description: redirect user for the web page
+        "400":
+          description: errors are from google api
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  
+  /auth/logout:
+    get:
+      tags:
+        - Auth
+      description: Users can only log themselves out, not other users
+      responses:
+        "200":
+          description: Logout was successful, clear refresh_token in redis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnouceSuccess'
+        "400":
+          description: server has some errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /categories:
+    get:
+      tags:
+        - Product
+      description: Get all categories from database
+      responses:
+        "200":
+          description: login by google successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoriesResponse"
+        "400":
+          description: errors are from google api
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: category is empty in the database
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                
+  /products:
+    get:
+      tags:
+        - Product
+      description: Get products follow by filter that it get from url,example - /products?sellerId=sellerId&price[gt]=2000
+      parameters:
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          description: search products by name
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: The numbers of items to return
+        - in: query
+          name: sellerId
+          schema:
+            type: string
+          description: search products by seller id
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: search products by category id
+        - in: query
+          name: currentPage
+          schema:
+            type: number
+          description: the current page of web site
+        - in: query
+          name: price[gte]
+          schema:
+            type: number
+          description: find products that it >= the price inputted
+        - in: query
+          name: price[gt]
+          schema:
+            type: number
+          description: >
+        - in: query
+          name: price[lte]
+          schema:
+            type: number
+          description: <=
+        - in: query
+          name: price[lt]
+          schema:
+            type: number
+          description: <
+      responses:
+        "200":
+          description: product list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsResponse"
+        "404":
+          description: products are empty in the database
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /product/{slug}:
+    get:
+      summary: Get product by slug
+      tags:
+        - Product
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: product list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDetailsResponse"
+        "404":
+          description: products are empty in the database
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  
+      
+  
+  /seller/add-product:
+    post:
+      tags:
+        - Seller
+      description: Add product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddProductRequest"
+      responses:
+        "200":
+          description: Add product is success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnnouceSuccess"
+        "401":
+            description: Category is not exist
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+        
+        "403":
+            description: product validation errors
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+
+        "500":
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+  
+  /seller/update-product:
+    put:
+      tags:
+        - Seller
+      description: update product by seller
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EditProductRequest"
+      responses:
+        "200":
+          description: Add product is success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnnouceSuccess"
+        "401":
+            description: Category is not exist
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+        
+        "403":
+            description: product validation errors
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+
+        "500":
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+                  
+  /seller/quick-update-product:
+    put:
+      tags:
+        - Seller
+      description: update quick product by seller
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EditQuickProductRequest"
+      responses:
+        "200":
+          description: Add product is success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnnouceSuccess"
+        
+        "403":
+            description: product validation errors
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+        "404":
+            description: product not found
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+
+        "500":
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+  
+  /seller/delete-product/{id}:
+    delete:
+      tags: 
+        - Seller
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: Deleting is success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnnouceSuccess"
+        "402":
+          description: The product is being ordered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        
+        "403":
+          description: The product has a buyer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: The product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                
+  /seller/orders-processing:
+    get:
+      tags:
+        - Seller
+      description: API get all orders that it not done
+      parameters:
+        - in: query
+          name: currentPage
+          schema:
+            type: number
+        - in: query
+          name: limit
+          schema:
+            type: number
+      
+      responses:
+      
+        "200":
+          description: order list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderList'
+        "400":
+            description: Invalid verify code
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+        "500":
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+                  
+  /seller/status-order:
+    put:
+      tags:
+        - Seller
+      description: update status of order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateStatusOrderRequest"
+      responses:
+        "200":
+          description: Deleting is success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnnouceSuccess"
+        "403":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: The product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /shipper/all-orders-shipping:
+    get:
+      tags:
+        - Shipper
+      description: API get all orders of shipper
+      parameters:
+        - in: query
+          name: currentPage
+          schema:
+            type: number
+        - in: query
+          name: limit
+          schema:
+            type: number
+      responses:
+       "200":
+          description: updating is success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderListShipping"
+       "403":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+       "404":
+          description: The product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              
+       "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /shipper/status-order:
+    put:
+      tags:
+        - Shipper
+      description: update status of order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateStatusOrderRequest"
+      responses:
+        "200":
+          description: updating is success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnnouceSuccess"
+        "403":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: The product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        
+  /admin/add-category:
+    post:
+      tags:
+        - Admin
+      description: Add a category from admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryRequest"
+      responses:
+        "200":
+          description: adding is success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnnouceSuccess"
+        "400":
+            description: Invalid verify code
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+        "500":
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+        
+components:
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT  
+  
+  schemas:
+    FileInfo:
+      type: object 
+      properties:
+        fileLink:
+          type: string
+        fileId:
+          type: string
+          
+    UserCredentials:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          example: baotrandinh100@gmail.com
+        password:
+          type: string
+          example: abc#1234
+    
+    UserSignUp:
+      type: object
+      required:
+        - email
+        - password
+        - name
+        - gender
+        - birthDay
+      properties:
+        email:
+          type: string
+          example: baotrandinh100@gmail.com
+        password:
+          type: string
+          description: Password must be 8-16 characters and contain both numbers and letters characters
+          example: 12345678b
+        name:
+          type: string
+        gender:
+          type: string
+          description: it kind of a checkbok
+          example: "male | female "
+        bithDay:
+          type: string
+    
+    
+    RefreshTokenRequest:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+    
+  
+
+    UserCredentialResponse:
+      type: object
+      required:
+        - data
+      properties:
+        status:
+          type: number
+        message:
+          type: string
+        data:
+          type: object
+          required:
+            - name
+            - avatar
+            - role
+            - gender
+            - typeLogin
+            - accessToken
+            - refreshToken
+          properties:
+            userId:
+              type: string
+            name:
+              type: string
+            nickName:
+              type: string
+            role:
+              type: string
+              example: user | seller
+            avatar:
+              type: string
+            meta:
+              type: object
+              properties:
+                totalBuy:
+                  type: integer
+                totalCancel:
+                  type: integer
+            typeLogin:
+              type: string
+              example: local | google
+            seller:
+              $ref: "#/components/schemas/SellerDetail"
+            special:
+              type: array
+              items:
+                type: object
+                
+                
+    SellerRegisterRequest:
+      description: the info of seller will send to server to create a seller account
+      type: object
+      required:
+        - token
+        - name
+        - slogan
+        - phone
+        - logo
+        - address
+      properties:
+        token:
+          type: string
+          description: check role
+        name:
+          type: string
+          description: name is unique
+          example: BTN Shop
+        slogan:
+          type: string
+          example: Just do it!
+        phone:
+          type: string
+          example: 0329460523
+        logo:
+          type: string
+        proof:
+          type: array
+          description: It help the seller confirm the Genuine Store
+          items:
+            type: string
+        facebook:
+          type: string
+        instagram:
+          type: string
+        youtube:
+          type: string
+        linkedin:
+          type: string
+            
+    ErrorResponse:
+      description: Error responses are sent when an error (e.g. unauthorized, bad request) occurred.
+      type: object
+      properties:
+        status:
+          description: the status of response.
+          type: integer
+          example: 400
+        errors:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Email is existed
+        
+    UserDetail:
+      description: user detail information
+      type: object
+      properties:
+        id:
+          type: string
+          example: 63312b2a82dc64f45360ff5a
+        role:
+          type: string
+          example: 'seller'
+        email:
+          type: string
+          example: baotrandinh100@gmail.com
+        name:
+          type: string
+          example: bao tran
+        meta:
+          type: object
+          properties:
+            totalBuy:
+              type: integer
+              default: 0
+            totalCancel:
+              type: string
+              default: 0
+        createdAt:
+          type: string
+          example: 2022-09-26T04:31:38.535+00:00
+        updatedAt:
+          type: string
+          example: 2022-09-26T04:31:54.365+00:00
+          
+    
+    SellerDetail:
+      description: Seller detail information
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 63312b2a82dc64f45360ff5a
+        info:
+          type: object
+          properties:
+            name:
+              type: string
+            address:
+              type: array
+              items:
+                type: string
+            phone: 
+              type: string
+        logo:
+          type: object
+          properties:
+            fileLink:
+              type: string
+            fileId:
+              type: string
+        slogan:
+          type: string
+          example: you can do it!
+        type:
+          type: string
+          example: normal | mall | global
+        meta:
+          $ref: "#/components/schemas/MetaSeller"
+        isDisable:
+          description: to implement lock the account of seller
+          type: boolean
+          default: false
+            
+    MetaSeller:
+      description: some information that it relate the shop of seller
+      type: object
+      properties:
+        totalSole:
+          type: number
+          default: 0
+        totalProduct:
+          type: number
+          default: 0
+        totalEvaluation:
+          type: number
+          default: 0
+        ranking: 
+          type: number
+          default: 0
+        title:
+          type: string
+          example: the best seller
+          
+    DeleteImagesRequest:
+      description: API to save a list of photos to delete
+      type: object
+      properties:
+        id:
+          type: string
+          description: the field that it is unique
+        token:
+          type: string
+        fileList:
+          type: array
+          items:
+            type: string
+            example: file id
+            
+    ForgotPasswordRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          example: baotrandinh100@gmail.com
+          
+    ResetPasswordRequest:
+      type: object
+      required:
+        - token
+        - password
+      description: Link got from your email
+      properties:
+        token:
+          type: string
+        password:
+          type: string
+          description: Password must contain at least 8 characters, including letters, numbers and special characters.
+    OTPRequestActive:
+      type: object
+      required:
+        - userId
+        - otp
+      description: OTP got from your email
+      properties:
+        userId:
+          type: string
+        otp:
+          type: integer
+          
+    AnnouceSuccess:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: "register is success, please check your email to active account"
+        data:
+          type: object
+              
+    AnnouceSuccessAuth:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            message:
+              type: string
+              example: "register is success, please check your email to active account"
+        userId:
+          type: string
+          description: it use to validate with backend
+    
+    SendOTPAgain:
+      type: object
+      properties:
+        userId:
+          type: string
+    
+    OTPResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+              example: "12312-dasd-dasdasd"
+        userId:
+              type: string
+              
+    CategoriesResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              slug:
+                type: string
+              name:
+                type: string
+              categoryImage:
+                type: string
+              _id:
+                type: string
+    
+    CategoryRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          
+    
+    AddProductRequest:
+      type: object
+      required:
+        - name
+        - author
+        - publisher
+        - language
+        - category
+        - publicationDate
+        - quantity
+        - city
+        - price
+      properties:
+        sellerId:
+          type: string
+        name:
+          type: string
+          example: name of book
+        author:
+          type: string
+        publisher:
+          type: string
+        language:
+          type: string
+        category:
+          type: string
+          example: object id
+        publicationDate:
+          type: string
+          example: mm/dd/yyyy - 10/26/2022
+        quantity:
+          type: number
+        city:
+          type: string
+        productPictures:
+          type: array
+          items:
+              $ref: "#/components/schemas/FileInfo"
+        summary:
+          type: string
+        description:
+          type: string
+        discountPercent:
+          type: number
+        printLength:
+          type: number
+        price:
+          type: number
+    
+    
+    CategoryInfo:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        categoryImage:
+          type: string
+          
+    SpecsProduct:
+      type: object
+      properties:
+        author:
+          type: string
+        printLength:
+          type: number
+        publisher:
+          type: string
+        language:
+          type: string
+        city:
+          type: string
+        publicationDate:
+          type: string
+    
+    MetaProduct:
+      type: object
+      properties:
+        totalSold:
+          type: number
+        totalOrder:
+          type: number
+        totalReview:
+          type: number
+    
+    ProductDetails:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        seller:
+            $ref: "#/components/schemas/SellerDetail"
+        slug:
+          type: string
+        price:
+          type: number
+        discountPercent:
+          type: number
+        summary:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: number
+        productPictures:
+          type: array
+          items:
+              $ref: "#/components/schemas/FileInfo"
+        category:
+            $ref: "#/components/schemas/CategoryInfo"
+        specs:
+            $ref: "#/components/schemas/SpecsProduct"
+        meta:
+            $ref: "#/components/schemas/MetaProduct"
+        
+    EditProductRequest:
+      type: object
+      properties:
+        product:
+          $ref: "#/components/schemas/AddProductRequest"
+        slug:
+          type: string
+    
+    EditQuickProductRequest:
+      type: object
+      properties:
+        productId:
+          type: string
+        productChanged:
+          type: object
+          required:
+            - name
+            - author
+            - summary
+            - price
+            - discountPercent
+            - quantity
+          properties:
+            name:
+              type: string
+            author:
+              type: string
+            summary:
+              type: string
+            price:
+              type: number
+            discountPercent:
+              type: number
+            quantity:
+              type: number
+    
+    ProductsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+              $ref: "#/components/schemas/ProductDetails"
+        totalProduct:
+          type: number
+    
+    ProductDetailsResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ProductDetails"
+          
+    OrderDetails:
+      type: object
+      properties:
+        _id:
+          type: string
+        user:
+          type: object
+          properties:
+            info:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                gender:
+                  type: string
+                language:
+                  type: string
+                birthDay:
+                  type: string
+            meta:
+              type: object
+              properties:
+                totalBuy:
+                  type: number
+                totalCancel:
+                  type: number
+        address:
+          type: object
+          properties:
+            name:
+              type: string
+            phoneNumber:
+              type: string
+            address:
+              type: string
+            zipCode:
+              type: number
+            isDefault:
+              type: boolean
+              
+        paymentType:
+              type: string
+        
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              product:
+                type: string
+              shippingCode:
+                type: number
+              discount:
+                type: number
+              price:
+                type: number
+              totalPaid:
+                type: number
+              quantity:
+                type: number
+              shippingCost:
+                type: number
+              orderStatus:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    date:
+                      type: string
+                    isCompleted:
+                      type: boolean
+                    _id:
+                      type: string
+              createdAt:
+                type: string
+              updatedAt:
+                type: string
+              _id:
+                type: string
+        product:
+          type: object
+          properties:
+            _id:
+              type: string
+            name:
+              type: string
+            quantity:
+              type: number
+            productPictures:
+              type: array
+              items:
+                type: object
+                properties:
+                  fileId:
+                    type: string
+                  fileLink:
+                    type: string
+            meta:
+              type: object
+              properties:
+                totalBuy:
+                  type: number
+                totalCancel:
+                  type: number
+    
+    OrderDetailsShipping:
+      type: object
+      properties:
+        _id:
+          type: string
+        product:
+          type: object
+          properties:
+            name:
+              type: string
+        totalPaid:
+          type: number
+        quantity:
+          type: number
+        isCancel:
+          type: boolean
+        orderStatus:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              date:
+                type: string
+              isCompleted:
+                type: boolean
+              _id:
+                type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        address:
+          type: object
+          properties:
+            name:
+              type: string
+            phoneNumber:
+              type: string
+            address:
+              type: string
+            zipCode:
+              type: number
+        paymentType:
+          type: string
+            
+    
+    OrderList:
+      type: object
+      properties:
+        page:
+          type: number
+        pageSize:
+          type: number
+        total:
+          type: number
+        total_page:
+          type: number
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderDetails"
+
+    OrderListShipping:
+      type: object
+      properties:
+        page:
+          type: number
+        pageSize:
+          type: number
+        total:
+          type: number
+        total_page:
+          type: number
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderDetailsShipping"        
+    
+    UpdateStatusOrderRequest:
+      type: object
+      properties:
+        orderId:
+          type: string
+
+    
+              
+            
+        

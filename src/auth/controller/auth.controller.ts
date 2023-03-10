@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import {
   Controller,
   Post,
@@ -11,10 +10,16 @@ import {
   Req,
   UnauthorizedException,
 } from '@nestjs/common';
+import filter from 'validator';
 import { Response } from 'express';
 import { AuthService } from '../service/auth.service';
 import { CreateUserDto, UserLoginDto, CreateSellerDto } from '../dto/user.dto';
-import { TokenDto } from '../dto/auth.dto';
+import {
+  TokenDto,
+  EmailResetPasswordDto,
+  ResetPasswordDto,
+  GoogleLoginDto,
+} from '../dto/auth.dto';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('api/v1/auth/')
@@ -24,7 +29,13 @@ export class AuthController {
   @Post('signup')
   async signup(@Body() user: CreateUserDto, @Res() res: Response) {
     try {
-      const payload = await this.usersService.signup(user);
+      const payload = await this.usersService.signup({
+        ...user,
+        email: filter.escape(user.email),
+        name: filter.escape(user.name),
+        nickName: filter.escape(user.nickName),
+        gender: filter.escape(user.gender),
+      });
       return res.status(payload.status).json(payload);
     } catch (error) {
       return res.status(error.status).json(error);
@@ -79,7 +90,8 @@ export class AuthController {
   }
 
   @Get('/token/check')
-  async checkToken(@Query() token: string, @Res() res) {
+  async checkToken(@Query() query, @Res() res) {
+    const { token } = query;
     try {
       const payload = await this.usersService.checkTokenExists(token);
       return res.status(payload.status).json(payload);
@@ -91,7 +103,71 @@ export class AuthController {
   @Post('/seller/create')
   async createSeller(@Body() seller: CreateSellerDto, @Res() res) {
     try {
-      const payload = await this.usersService.sellerRegister(seller);
+      const payload = await this.usersService.sellerRegister({
+        ...seller,
+        name: filter.escape(seller.name),
+        slogan: filter.escape(seller.slogan),
+        facebook: seller.facebook
+          ? filter.escape(seller.facebook)
+          : seller.facebook,
+        instagram: seller.instagram
+          ? filter.escape(seller.instagram)
+          : seller.instagram,
+        linkedin: seller.linkedin
+          ? filter.escape(seller.linkedin)
+          : seller.linkedin,
+        youtube: seller.youtube
+          ? filter.escape(seller.youtube)
+          : seller.youtube,
+      });
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @Post('/password/email')
+  async emailResetPassword(@Body() body: EmailResetPasswordDto, @Res() res) {
+    const { email } = body;
+    try {
+      const payload = await this.usersService.sendEmailResetPassword(email);
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @Post('/password/reset')
+  async resetPassword(@Body() body: ResetPasswordDto, @Res() res) {
+    try {
+      const payload = await this.usersService.resetPassword(body);
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @Post('/login/refresh')
+  async relogin(@Body() body: TokenDto, @Req() req, @Res() res) {
+    try {
+      const { token } = body;
+      const payload = await this.usersService.refreshToken(token);
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @Post('/oauth/google')
+  async googleLogin(@Body() body: GoogleLoginDto, @Res() res) {
+    try {
+      const { idToken, accessToken } = body;
+      const googleUser = await this.usersService.getGoogleUser(
+        idToken,
+        accessToken,
+      );
+      const payload = await this.usersService.googleLogin(googleUser);
       return res.status(payload.status).json(payload);
     } catch (error) {
       return res.status(error.status).json(error);

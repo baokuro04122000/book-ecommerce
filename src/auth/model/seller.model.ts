@@ -22,8 +22,7 @@ const SellerSchema = new mongoose.Schema(
       address: [{ location: { type: String, min: 5, max: 150 } }],
     },
     logo: {
-      fileLink: { type: String },
-      fileId: { type: String, default: null },
+      type: String,
     },
     slogan: {
       type: String,
@@ -33,12 +32,7 @@ const SellerSchema = new mongoose.Schema(
       enum: ['normal', 'mall', 'global'],
       default: 'normal',
     },
-    proof: [
-      {
-        fileLink: { type: String },
-        fileId: { type: String },
-      },
-    ],
+    proof: [String],
     meta: {
       totalSold: {
         type: Number,

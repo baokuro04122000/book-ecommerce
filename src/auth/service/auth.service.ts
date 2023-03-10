@@ -4,8 +4,10 @@ import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { Redis } from 'ioredis';
+import axios from 'axios';
+import qs from 'qs';
 import { CreateUserDto, UserLoginDto, CreateSellerDto } from '../dto/user.dto';
-import { TokenDto } from '../dto/auth.dto';
+import { TokenDto, ResetPasswordDto } from '../dto/auth.dto';
 import { User, USER_MODEL } from '../model/user.model';
 import { Token, TOKEN_MODEL } from '../model/token.model';
 import { Seller, SELLER_MODEL } from '../model/seller.model';
@@ -297,192 +299,6 @@ export class AuthService {
           );
         }
 
-        if (account.role === 'user') {
-          const payload = {
-            userId: account._id,
-            nickName: account.info.nickName,
-            name: account.info.name,
-            avatar: account.info.avatar,
-            gender: account.info.gender,
-            role: account.role,
-            special: account.specs,
-            typeLogin: 'local',
-          };
-          try {
-            const accessToken = await this.generateToken(
-              {
-                userId: account._id,
-                role: account.role,
-              },
-              process.env.TOKEN_SECRET || 'dinhbao',
-              process.env.TTL_TOKEN_SECRET || '1h',
-            );
-            const refreshToken = await this.generateToken(
-              {
-                userId: account._id,
-              },
-              process.env.REFRESH_TOKEN || 'dinhbaorefresh',
-              process.env.TTL_REFRESH_TOKEN || '7d',
-            );
-            const setAccess = this.setRedis(
-              accessToken,
-              account._id,
-              Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
-            );
-
-            const setRefresh = this.setRedis(
-              refreshToken,
-              account._id,
-              Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
-            );
-            Promise.all([setAccess, setRefresh])
-              .then((result) => {
-                this.logger.log('access::', result[0]);
-                this.logger.log('refresh::', result[1]);
-              })
-              .catch((err) => {
-                this.logger.error('redis error:::', err);
-              });
-
-            return resolve({
-              status: HttpStatus.OK,
-              message: 'OK',
-              data: {
-                ...payload,
-                accessToken,
-                refreshToken,
-              },
-            });
-          } catch (error) {
-            this.logger.error(error.toString());
-            return reject(
-              errorResponse({
-                status: HttpStatus.INTERNAL_SERVER_ERROR,
-                message: Message.internal_server_error,
-              }),
-            );
-          }
-        }
-        if (account.role === 'shipper') {
-          const payload = {
-            userId: account._id,
-            nickName: account.info.nickName,
-            name: account.info.name,
-            avatar: account.info.avatar,
-            gender: account.info.gender,
-            role: account.role,
-            special: account.specs,
-            typeLogin: 'local',
-          };
-          try {
-            const accessToken = await this.generateToken(
-              {
-                userId: account._id,
-                role: account.role,
-              },
-              process.env.TOKEN_SECRET || 'dinhbao',
-              process.env.TTL_TOKEN_SECRET || '1h',
-            );
-            const refreshToken = await this.generateToken(
-              {
-                userId: account._id,
-              },
-              process.env.REFRESH_TOKEN || 'dinhbaorefresh',
-              process.env.TTL_REFRESH_TOKEN || '7d',
-            );
-            const setAccess = this.setRedis(
-              accessToken,
-              account._id,
-              Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
-            );
-
-            const setRefresh = this.setRedis(
-              refreshToken,
-              account._id,
-              Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
-            );
-            Promise.all([setAccess, setRefresh])
-              .then((result) => {
-                this.logger.log('access::', result[0]);
-                this.logger.log('refresh::', result[1]);
-              })
-              .catch((err) => {
-                this.logger.error('redis error:::', err);
-              });
-            return resolve({
-              status: HttpStatus.OK,
-              message: 'OK',
-              data: {
-                ...payload,
-                accessToken,
-                refreshToken,
-              },
-            });
-          } catch (error) {
-            this.logger.error(error.toString());
-            return reject(
-              errorResponse({
-                status: HttpStatus.INTERNAL_SERVER_ERROR,
-                message: Message.internal_server_error,
-              }),
-            );
-          }
-        }
-        if (account.role === 'admin') {
-          const payload = {
-            userId: account._id,
-            nickName: account.info.nickName,
-            name: account.info.name,
-            avatar: account.info.avatar,
-            role: account.role,
-            gender: account.info.gender,
-            special: account.specs,
-            typeLogin: 'local',
-          };
-          const accessToken = await this.generateToken(
-            {
-              userId: account._id,
-              role: account.role,
-            },
-            process.env.TOKEN_SECRET || 'dinhbao',
-            process.env.TTL_TOKEN_SECRET || '1h',
-          );
-          const refreshToken = await this.generateToken(
-            {
-              userId: account._id,
-            },
-            process.env.REFRESH_TOKEN || 'dinhbaorefresh',
-            process.env.TTL_REFRESH_TOKEN || '7d',
-          );
-          const setAccess = this.setRedis(
-            accessToken,
-            account._id,
-            Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
-          );
-
-          const setRefresh = this.setRedis(
-            refreshToken,
-            account._id,
-            Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
-          );
-          Promise.all([setAccess, setRefresh])
-            .then((result) => {
-              this.logger.log('access::', result[0]);
-              this.logger.log('refresh::', result[1]);
-            })
-            .catch((err) => {
-              this.logger.error('redis error:::', err);
-            });
-          return resolve({
-            status: HttpStatus.OK,
-            message: 'OK',
-            data: {
-              ...payload,
-              accessToken,
-              refreshToken,
-            },
-          });
-        }
         const payload = {
           userId: account._id,
           nickName: account.info.nickName,
@@ -490,7 +306,6 @@ export class AuthService {
           avatar: account.info.avatar,
           gender: account.info.gender,
           role: account.role,
-          seller: account.seller,
           special: account.specs,
           typeLogin: 'local',
         };
@@ -528,6 +343,18 @@ export class AuthService {
           .catch((err) => {
             this.logger.error('redis error:::', err);
           });
+        if (account.role === 'seller') {
+          return resolve({
+            status: HttpStatus.OK,
+            message: 'OK',
+            data: {
+              ...payload,
+              seller: account.seller,
+              accessToken,
+              refreshToken,
+            },
+          });
+        }
         return resolve({
           status: HttpStatus.OK,
           message: 'OK',
@@ -671,7 +498,7 @@ export class AuthService {
             'info.name': seller.name,
           })
           .lean();
-        if (!nameExisted) {
+        if (nameExisted) {
           return reject(
             errorResponse({
               status: HttpStatus.BAD_REQUEST,
@@ -716,7 +543,7 @@ export class AuthService {
         tokenValid.remove();
         return resolve({
           status: HttpStatus.CREATED,
-          message: data.info.name + Message.seller_create_success,
+          message: data.info.name + ' ' + Message.seller_create_success,
           data: null,
         });
       } catch (error) {
@@ -725,6 +552,517 @@ export class AuthService {
           errorResponse({
             status: HttpStatus.INTERNAL_SERVER_ERROR,
             message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  getGoogleOauthTokens(code): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      const url = process.env.GOOGLE_OAUTH_TOKEN;
+      const values = {
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: process.env.GOOGLE_OAUTH_REDIRECT_URL,
+        grant_type: 'authorization_code',
+      };
+      try {
+        const { data } = await axios.post(url, qs.stringify(values), {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        });
+        return resolve(data);
+      } catch (error) {
+        this.logger.error(error.response.data.error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: error.response.data.error,
+          }),
+        );
+      }
+    });
+  }
+
+  getGoogleUser(id_token: string, access_token: string): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const { data } = await axios.get(
+          `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`,
+          {
+            headers: {
+              Authorization: `Bearer ${id_token}`,
+            },
+          },
+        );
+        return resolve(data);
+      } catch (error) {
+        this.logger.error(error.response.data.error);
+        return reject(
+          errorResponse({ status: 500, message: error.response.data.error }),
+        );
+      }
+    });
+  }
+
+  googleLogin(googleUser: any): Promise<INotifyResponse<UserLoginPayload>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        if (!googleUser.verified_email) {
+          return reject({
+            status: 203,
+            errors: {
+              message: Message.account_inactive,
+            },
+          });
+        }
+        const accountExisted = await this.userModel.findOne({
+          $or: [
+            { 'google.uid': googleUser.id },
+            { 'local.email': googleUser.email },
+          ],
+        });
+
+        //account not exists
+        if (!accountExisted) {
+          const createUser = new this.userModel({
+            google: {
+              uid: googleUser.id,
+              email: googleUser.email,
+              picture: googleUser.picture,
+              name: googleUser.name,
+            },
+          });
+          const created = await createUser.save();
+          const payload = {
+            userId: created._id,
+            email: created.google.email,
+            name: created.google.name,
+            avatar: created.google.picture,
+            gender: 'male',
+            role: created.role,
+            meta: created.meta,
+            typeLogin: 'google',
+          };
+          try {
+            const accessToken = await this.generateToken(
+              {
+                userId: created._id,
+                role: created.role,
+              },
+              process.env.TOKEN_SECRET || 'dinhbao',
+              process.env.TTL_TOKEN_SECRET || '1h',
+            );
+            const refreshToken = await this.generateToken(
+              {
+                userId: created._id,
+              },
+              process.env.REFRESH_TOKEN || 'dinhbaorefresh',
+              process.env.TTL_REFRESH_TOKEN || '7d',
+            );
+            const setAccess = this.setRedis(
+              accessToken,
+              created._id,
+              Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
+            );
+
+            const setRefresh = this.setRedis(
+              refreshToken,
+              created._id,
+              Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
+            );
+            Promise.all([setAccess, setRefresh])
+              .then((result) => {
+                this.logger.log('access::', result[0]);
+                this.logger.log('refresh::', result[1]);
+              })
+              .catch((err) => {
+                this.logger.error('redis error:::', err);
+              });
+            return resolve({
+              status: HttpStatus.OK,
+              message: 'OK',
+              data: {
+                ...payload,
+                accessToken,
+                refreshToken,
+              },
+            });
+          } catch (error) {
+            this.logger.error(error);
+            return reject(
+              errorResponse({
+                status: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: Message.internal_server_error,
+              }),
+            );
+          }
+        }
+
+        //account is existed
+        if (accountExisted.status === 'blocked') {
+          return reject(
+            errorResponse({
+              status: HttpStatus.FORBIDDEN,
+              message: Message.account_locked,
+            }),
+          );
+        }
+        const updatedAccount = await this.userModel.findOneAndUpdate(
+          {
+            $or: [
+              { 'google.uid': googleUser.id },
+              { 'local.email': googleUser.email },
+            ],
+          },
+          {
+            $set: {
+              'google.uid': googleUser.id,
+              'google.email': googleUser.email,
+              'google.picture': googleUser.picture,
+              'google.name': googleUser.name,
+            },
+          },
+          {
+            upsert: true,
+            new: true,
+          },
+        );
+
+        if (updatedAccount.role === 'user') {
+          const payload = {
+            userId: updatedAccount._id,
+            email: googleUser.email,
+            name: googleUser.name,
+            gender: 'male',
+            avatar: googleUser.picture,
+            role: updatedAccount.role,
+            meta: updatedAccount.meta,
+            typeLogin: 'google',
+          };
+          try {
+            const accessToken = await this.generateToken(
+              {
+                userId: updatedAccount._id,
+                role: updatedAccount.role,
+              },
+              process.env.TOKEN_SECRET || 'dinhbao',
+              process.env.TTL_TOKEN_SECRET || '1h',
+            );
+            const refreshToken = await this.generateToken(
+              {
+                userId: updatedAccount._id,
+              },
+              process.env.REFRESH_TOKEN || 'dinhbaorefresh',
+              process.env.TTL_REFRESH_TOKEN || '7d',
+            );
+            const setAccess = this.setRedis(
+              accessToken,
+              updatedAccount._id,
+              Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
+            );
+
+            const setRefresh = this.setRedis(
+              refreshToken,
+              updatedAccount._id,
+              Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
+            );
+            Promise.all([setAccess, setRefresh])
+              .then((result) => {
+                this.logger.log('access::', result[0]);
+                this.logger.log('refresh::', result[1]);
+              })
+              .catch((err) => {
+                this.logger.error('redis error:::', err);
+              });
+            return resolve({
+              status: HttpStatus.OK,
+              message: 'OK',
+              data: {
+                ...payload,
+                accessToken,
+                refreshToken,
+              },
+            });
+          } catch (error) {
+            this.logger.error(error);
+            return reject(
+              errorResponse({
+                status: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: Message.internal_server_error,
+              }),
+            );
+          }
+        }
+        const payload = {
+          _id: updatedAccount._id,
+          email: googleUser.email,
+          name: googleUser.name,
+          gender: 'male',
+          avatar: googleUser.picture,
+          role: updatedAccount.role,
+          meta: updatedAccount.meta,
+          seller: updatedAccount.seller,
+          typeLogin: 'google',
+        };
+        const accessToken = await this.generateToken(
+          {
+            userId: updatedAccount._id,
+            role: updatedAccount.role,
+          },
+          process.env.TOKEN_SECRET || 'dinhbao',
+          process.env.TTL_TOKEN_SECRET || '1h',
+        );
+        const refreshToken = await this.generateToken(
+          {
+            userId: updatedAccount._id,
+          },
+          process.env.REFRESH_TOKEN || 'dinhbaorefresh',
+          process.env.TTL_REFRESH_TOKEN || '7d',
+        );
+        const setAccess = this.setRedis(
+          accessToken,
+          updatedAccount._id,
+          Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
+        );
+
+        const setRefresh = this.setRedis(
+          refreshToken,
+          updatedAccount._id,
+          Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
+        );
+        Promise.all([setAccess, setRefresh])
+          .then((result) => {
+            this.logger.log('access::', result[0]);
+            this.logger.log('refresh::', result[1]);
+          })
+          .catch((err) => {
+            this.logger.error('redis error:::', err);
+          });
+        return resolve({
+          status: HttpStatus.OK,
+          message: 'OK',
+          data: {
+            ...payload,
+            accessToken,
+            refreshToken,
+          },
+        });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  sendEmailResetPassword(email: string): Promise<INotifyResponse<null>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const getUser = await this.userModel
+          .findOne({
+            'local.email': email,
+          })
+          .lean();
+        if (!getUser) {
+          return reject({
+            status: 400,
+            errors: {
+              message: Message.email_not_exists,
+            },
+          });
+        }
+        if (!getUser.local.verified) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.FOUND,
+              message: Message.account_inactive,
+            }),
+          );
+        }
+        const token = uuidv4();
+
+        (await this.tokenModel.find({ user: getUser._id })).map((value) =>
+          value.remove(),
+        );
+        await new this.tokenModel({
+          user: getUser._id,
+          generatedToken: token,
+        }).save();
+        this.redisClient.publish(
+          'send_email_reset_password',
+          JSON.stringify({
+            email: email,
+            token: token,
+            name: getUser.info.name,
+          }),
+        );
+
+        return resolve({
+          status: HttpStatus.OK,
+          message: Message.send_mail_reset_success,
+          data: null,
+        });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  resetPassword({
+    password,
+    token,
+  }: ResetPasswordDto): Promise<INotifyResponse<null>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const existed = await this.tokenModel.findOne({
+          generatedToken: token,
+        });
+        if (!existed) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.BAD_REQUEST,
+              message: Message.token_invalid,
+            }),
+          );
+        }
+        const salt = await bcrypt.genSalt(10);
+        const hashPassword = await bcrypt.hash(password, salt);
+        await this.userModel.updateOne(
+          {
+            _id: existed.user,
+          },
+          {
+            $set: {
+              'local.password': hashPassword,
+            },
+          },
+        );
+        existed.remove();
+        return resolve({
+          status: HttpStatus.OK,
+          message: Message.reset_password_success,
+          data: null,
+        });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  refreshToken(token: string): Promise<INotifyResponse<UserLoginPayload>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const encode = await this.jwt.verify(token, {
+          secret: process.env.REFRESH_TOKEN || 'dinhbaorefresh',
+        });
+        if (!encode) {
+          this.logger.error('bad user!!');
+          return reject(
+            errorResponse({
+              status: HttpStatus.BAD_REQUEST,
+              message: Message.token_invalid,
+            }),
+          );
+        }
+        //check token redis match or not
+        await this.checkTokenRedis(encode);
+        const account = await this.userModel
+          .findOne({
+            _id: encode.userId,
+          })
+          .populate('seller')
+          .lean();
+        const payload = {
+          userId: account._id,
+          nickName: account.info.nickName,
+          name: account.info.name,
+          avatar: account.info.avatar,
+          role: account.role,
+          gender: account.info.gender,
+          special: account.specs,
+          typeLogin: 'local',
+        };
+        const accessToken = await this.generateToken(
+          {
+            userId: account._id,
+            role: account.role,
+          },
+          process.env.TOKEN_SECRET || 'dinhbao',
+          process.env.TTL_TOKEN_SECRET || '1h',
+        );
+        const refreshToken = await this.generateToken(
+          {
+            userId: account._id,
+          },
+          process.env.REFRESH_TOKEN || 'dinhbaorefresh',
+          process.env.TTL_REFRESH_TOKEN || '7d',
+        );
+        const setAccess = this.setRedis(
+          accessToken,
+          account._id,
+          Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
+        );
+
+        const setRefresh = this.setRedis(
+          refreshToken,
+          account._id,
+          Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
+        );
+        Promise.all([setAccess, setRefresh])
+          .then((result) => {
+            this.logger.log('access::', result[0]);
+            this.logger.log('refresh::', result[1]);
+          })
+          .catch((err) => {
+            this.logger.error('redis error:::', err);
+          });
+        if (account.role === 'seller') {
+          return resolve({
+            status: HttpStatus.OK,
+            message: 'OK',
+            data: {
+              ...payload,
+              seller: account.seller,
+              accessToken,
+              refreshToken,
+            },
+          });
+        }
+        return resolve({
+          status: HttpStatus.OK,
+          message: 'OK',
+          data: {
+            ...payload,
+            accessToken,
+            refreshToken,
+          },
+        });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.BAD_REQUEST,
+            message: Message.token_invalid,
           }),
         );
       }

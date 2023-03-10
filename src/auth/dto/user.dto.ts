@@ -62,7 +62,7 @@ export class CreateSellerDto {
   name: string;
 
   @IsNotEmpty()
-  @IsPhoneNumber()
+  @IsPhoneNumber('VN')
   phone: string;
 
   @IsNotEmpty()
@@ -77,7 +77,7 @@ export class CreateSellerDto {
   slogan: string;
 
   @IsOptional()
-  proof: Array<{ fileLink: string; fileId: string }>;
+  proof: Array<string>;
 
   @IsOptional()
   facebook: string;
