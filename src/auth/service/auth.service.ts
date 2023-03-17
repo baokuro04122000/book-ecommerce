@@ -5,9 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { Redis } from 'ioredis';
 import axios from 'axios';
-import qs from 'qs';
 import { CreateUserDto, UserLoginDto, CreateSellerDto } from '../dto/user.dto';
-import { TokenDto, ResetPasswordDto } from '../dto/auth.dto';
+import { TokenDto, ResetPasswordDto, LogoutDto } from '../dto/auth.dto';
 import { User, USER_MODEL } from '../model/user.model';
 import { Token, TOKEN_MODEL } from '../model/token.model';
 import { Seller, SELLER_MODEL } from '../model/seller.model';
@@ -379,7 +378,13 @@ export class AuthService {
   sellerRegisterRequest(userId: string): Promise<INotifyResponse<null>> {
     return new Promise(async (resolve, reject) => {
       try {
-        const token = uuidv4();
+        const token = await this.jwt.sign(
+          { userId },
+          {
+            secret: process.env.IMAGE_TOKEN_SECRET || 'upload-image',
+            expiresIn: '1d',
+          },
+        );
 
         const user = await this.userModel
           .findOne({
@@ -558,43 +563,15 @@ export class AuthService {
     });
   }
 
-  getGoogleOauthTokens(code): Promise<any> {
-    return new Promise(async (resolve, reject) => {
-      const url = process.env.GOOGLE_OAUTH_TOKEN;
-      const values = {
-        code,
-        client_id: process.env.GOOGLE_CLIENT_ID,
-        client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: process.env.GOOGLE_OAUTH_REDIRECT_URL,
-        grant_type: 'authorization_code',
-      };
-      try {
-        const { data } = await axios.post(url, qs.stringify(values), {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        });
-        return resolve(data);
-      } catch (error) {
-        this.logger.error(error.response.data.error);
-        return reject(
-          errorResponse({
-            status: HttpStatus.INTERNAL_SERVER_ERROR,
-            message: error.response.data.error,
-          }),
-        );
-      }
-    });
-  }
-
-  getGoogleUser(id_token: string, access_token: string): Promise<any> {
+  getGoogleUser(access_token: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
       try {
         const { data } = await axios.get(
-          `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`,
+          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${access_token}`,
           {
             headers: {
-              Authorization: `Bearer ${id_token}`,
+              Authorization: `Bearer ${access_token}`,
+              Accept: 'application/json',
             },
           },
         );
@@ -1056,6 +1033,34 @@ export class AuthService {
             accessToken,
             refreshToken,
           },
+        });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.BAD_REQUEST,
+            message: Message.token_invalid,
+          }),
+        );
+      }
+    });
+  }
+
+  logout({
+    accessToken,
+    refreshToken,
+  }: LogoutDto): Promise<INotifyResponse<null>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const clearTokenRedis = await this.redisClient.del(
+          accessToken,
+          refreshToken,
+        );
+        console.log(clearTokenRedis);
+        return resolve({
+          status: HttpStatus.OK,
+          message: 'OK',
+          data: null,
         });
       } catch (error) {
         this.logger.error(error);
