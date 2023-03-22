@@ -56,4 +56,7 @@ export class CreateProductDto {
 
   @IsOptional()
   specs: Array<any>;
+
+  @IsOptional()
+  variant: Array<any>;
 }

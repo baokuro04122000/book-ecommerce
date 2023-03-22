@@ -79,7 +79,7 @@ export class AuthController {
   async requestRegister(@Req() req, @Res() res) {
     try {
       if (req.user.role !== 'user') {
-        return new UnauthorizedException();
+        return res.status(401).json(new UnauthorizedException());
       }
       const payload = await this.usersService.sellerRegisterRequest(
         req.user.userId,

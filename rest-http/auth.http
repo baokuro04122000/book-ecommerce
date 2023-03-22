@@ -1,16 +1,17 @@
 @HOST = http://localhost:8000/api/v1/auth
-
+### tk: admin@admin.com
+### mk: hello123@
 ### sign up
 POST {{HOST}}/signup
 Content-Type: application/json
 
 {
-  "email":"baotrandinh.ute@gmail.com",
+  "email":"admin@admin.com",
   "name":"bao tran",
   "nickName":"kuro",
   "gender":"male",
   "birthDay":"2000-12-04",
-  "password":"123bao@@45"
+  "password":"hello123@"
 }
 
 ### active account
@@ -21,16 +22,15 @@ GET {{HOST}}/signup/active?token=sdfsfsd
 ### login
 POST {{HOST}}/login
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJhb3RyYW5kaW5oLnV0ZUBnbWFpbC5jb20ifQ.JHLsa0zZ2wP8Psg35sv5oA4QE3MWx86ERfnR2HlrPXQ
 
 {
-  "email":"baotrandinh.ute@gmail.com",
-  "password":"123bao@@45"
+  "email":"admin@admin.com",
+  "password":"hello123@"
 }
 
 ### request register seller
 GET {{HOST}}/seller/register
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDA2YjM5NDJkOGZkNjZmZjViZTc1ODAiLCJyb2xlIjoidXNlciIsImlhdCI6MTY3ODMyNTk5MiwiZXhwIjoxNjc4MzI5NTkyfQ.gk9gpC9mouvljaY7SItSbtJcjq06vtWBWs_h8sRWsBo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDA2YjM5NDJkOGZkNjZmZjViZTc1ODAiLCJyb2xlIjoidXNlciIsImlhdCI6MTY3OTM2ODc4MywiZXhwIjoxNjc5MzcyMzgzfQ.m_R4C2yp1drPwy0wKCgL0s0hw2yHKkL2hdioNdVvjo8
 
 {}
 
@@ -83,14 +83,5 @@ Content-Type: application/json
 
 {
   
-}
-
-### add product test
-POST http://localhost:8000/api/v1/product/add
-Content-Type: application/json
-Authorization: Bearer sdasInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDA2YjM5NDJkOGZkNjZmZjViZTc1ODAiLCJyb2xlIjoidXNlciIsImlhdCI6MTY3ODMyNTk5MiwiZXhwIjoxNjc4MzI5NTkyfQ.gk9gpC9mouvljaY7SItSbtJcjq06vtWBWs_h8sRWsBo
-
-{
-
 }
 

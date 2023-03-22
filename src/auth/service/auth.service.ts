@@ -429,7 +429,7 @@ export class AuthService {
           JSON.stringify({
             email: user.local.email,
             _id: user._id,
-            verifyToken: createToken.generatedToken,
+            verifyToken: encodeURIComponent(createToken.generatedToken),
             name: user.info.name,
             type: 'register_seller',
           }),
