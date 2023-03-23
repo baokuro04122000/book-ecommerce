@@ -19,6 +19,7 @@ import {
   EmailResetPasswordDto,
   ResetPasswordDto,
   GoogleLoginDto,
+  LogoutDto,
 } from '../dto/auth.dto';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -78,7 +79,7 @@ export class AuthController {
   async requestRegister(@Req() req, @Res() res) {
     try {
       if (req.user.role !== 'user') {
-        return new UnauthorizedException();
+        return res.status(401).json(new UnauthorizedException());
       }
       const payload = await this.usersService.sellerRegisterRequest(
         req.user.userId,
@@ -162,12 +163,20 @@ export class AuthController {
   @Post('/oauth/google')
   async googleLogin(@Body() body: GoogleLoginDto, @Res() res) {
     try {
-      const { idToken, accessToken } = body;
-      const googleUser = await this.usersService.getGoogleUser(
-        idToken,
-        accessToken,
-      );
+      console.log(body);
+      const { accessToken } = body;
+      const googleUser = await this.usersService.getGoogleUser(accessToken);
       const payload = await this.usersService.googleLogin(googleUser);
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @Post('/logout')
+  async logout(@Body() body: LogoutDto, @Res() res) {
+    try {
+      const payload = await this.usersService.logout(body);
       return res.status(payload.status).json(payload);
     } catch (error) {
       return res.status(error.status).json(error);

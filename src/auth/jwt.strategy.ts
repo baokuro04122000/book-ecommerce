@@ -19,7 +19,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(req: Request, payload: any) {
     const bearer = req.headers['authorization'];
     const token = bearer.slice(7, bearer.length);
-
     try {
       await this.authService.checkTokenRedis({
         token,

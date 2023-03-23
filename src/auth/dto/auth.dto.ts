@@ -9,10 +9,6 @@ export class TokenDto {
 export class GoogleLoginDto {
   @IsNotEmpty()
   @IsString()
-  idToken: string;
-
-  @IsNotEmpty()
-  @IsString()
   accessToken: string;
 }
 
@@ -32,4 +28,14 @@ export class EmailResetPasswordDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
+}
+
+export class LogoutDto {
+  @IsNotEmpty()
+  @IsString()
+  accessToken: string;
+
+  @IsNotEmpty()
+  @IsString()
+  refreshToken: string;
 }

@@ -1,0 +1,9 @@
+@HOST=http://localhost:8000/api/v1/category
+
+POST {{HOST}}/add
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDFhN2Y5OGQyMjVmOTM4OTk4ZTQxYzEiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2Nzk0NjUzMzEsImV4cCI6MTY3OTQ2ODkzMX0.qsOHCkPuoYabWAxWm-Qli0VMonairCLX6bI5QzjGSIU
+
+{
+  "name":"Hormor"
+}

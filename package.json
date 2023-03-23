@@ -36,11 +36,14 @@
     "class-validator": "^0.14.0",
     "ioredis": "^5.3.1",
     "mongoose": "^6.10.0",
+    "nanoid": "^4.0.1",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+    "shortid": "^2.2.16",
+    "slugify": "^1.6.5",
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {

@@ -110,4 +110,5 @@ export default {
   add_review_success: 'Add review success',
   internal_server_error: 'INTERNAL SERVER ERROR',
   seller_registed: 'You was registed seller account',
+  name_not_exists: 'Name is not exists',
 };

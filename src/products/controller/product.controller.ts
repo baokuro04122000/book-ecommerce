@@ -3,12 +3,10 @@ import {
   Post,
   Body,
   Res,
-  Get,
-  Query,
-  ValidationPipe,
   UseGuards,
   Req,
-  UnauthorizedException,
+  HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateProductDto } from '../dto/product.dto';
@@ -20,9 +18,15 @@ export class ProductController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post('/add')
-  async add(@Body() product: CreateProductDto, @Res() res) {
+  async add(@Body() product: CreateProductDto, @Res() res, @Req() req) {
+    if (req.user !== 'seller') {
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .json(new HttpException('Bad request', HttpStatus.BAD_REQUEST));
+    }
     try {
-      return res.json('hello world');
+      const payload = await this.productService.addProduct(product);
+      return res.status(payload.status).json(payload);
     } catch (error) {
       return res.status(error.status).json(error);
     }
