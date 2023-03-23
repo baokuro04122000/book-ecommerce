@@ -30,7 +30,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJhb3RyY
 
 ### request register seller
 GET {{HOST}}/seller/register
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDA2YjM5NDJkOGZkNjZmZjViZTc1ODAiLCJyb2xlIjoidXNlciIsImlhdCI6MTY3ODMyNTk5MiwiZXhwIjoxNjc4MzI5NTkyfQ.gk9gpC9mouvljaY7SItSbtJcjq06vtWBWs_h8sRWsBo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDBjMjhkZDNhZGM1MTI3ZTU2YTNiZWMiLCJyb2xlIjoidXNlciIsImlhdCI6MTY3ODUxODU1MiwiZXhwIjoxNjc4NTIyMTUyfQ.mKB6ZtAGmDgmfninscj19eq27F4KJzvUozl-8rx_6f0
 
 {}
 
@@ -39,7 +39,7 @@ POST {{HOST}}/seller/create
 Content-Type: application/json
 
 {
-  "token":"175eceba-a36d-4aad-9fd5-1df3476048c2",
+  "token":"71590247-0604-490f-a9c6-eb4842eb38ca",
   "name":"Test Shop",
   "phone":"0329460523",
   "address":[{

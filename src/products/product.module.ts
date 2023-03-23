@@ -8,7 +8,6 @@ import {
   DatabaseModule,
   DATABASE_CONNECTION,
 } from 'src/database/mongodb.module';
-import { jwtModule, redisModule } from 'src/module.config';
 import { ProductController } from './controller/product.controller';
 import { CategorySchema, CATEGORY_MODEL } from './model/category.model';
 import { ProductSchema, PRODUCT_MODEL } from './model/product.model';
