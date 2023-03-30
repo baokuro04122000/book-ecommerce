@@ -7,12 +7,28 @@ Authorization: Bearer
 
 {
   "name":"product 1",
-  "quantity":1000,
-  "maxOrder":123,
-  "price":125,
-  "discountPercent":12,
-  "summary":"ashgd",
+  "variant":[
+    {
+      "type":"kindle",
+      "quantity":50,
+      "maxOrder":10,
+      "price":5,
+      "discount": 0
+    },
+    {
+      "type":"paperBack",
+      "quantity":100,
+      "maxOrder":20,
+      "price":20,
+      "discount": 10
+    }
+  ],
   "description":"jghasd",
   "category":"ashgd",
   "productPictures":[],
+  "specs":[
+    {"k":"author", "v":"robin"},
+    {"k":"printLength", "v":200},
+    {"k":"publicDate", "v": "20/4/2022"}
+  ]
 }

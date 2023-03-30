@@ -25,7 +25,7 @@ const UserSchema = new mongoose.Schema(
       picture: { type: String },
     },
     info: {
-      name: { type: String, min: 2, max: 30, required: true },
+      name: { type: String, min: 2, max: 30 },
       nickName: { type: String, min: 2, max: 50, default: '' },
       gender: {
         type: String,

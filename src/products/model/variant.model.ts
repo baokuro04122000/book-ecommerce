@@ -2,10 +2,9 @@ import mongoose, { Document } from 'mongoose';
 export const VARIANT_MODEL = 'VARIANT_MODEL';
 const VariantSchema = new mongoose.Schema(
   {
-    name: {
+    type: {
       required: true,
       type: String,
-      unique: true,
     },
     summary: {
       type: String,
@@ -14,9 +13,17 @@ const VariantSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    image: {
-      type: String,
-      default: '',
+    price: {
+      type: Number,
+      required: true,
+    },
+    discount: {
+      type: Number,
+      default: 0,
+    },
+    maxOrder: {
+      type: Number,
+      default: 10,
     },
   },
   {
@@ -27,7 +34,10 @@ const VariantSchema = new mongoose.Schema(
 export { VariantSchema };
 
 export interface Variant extends Document {
-  name: string;
-  summary: string;
-  quantity;
+  type: string;
+  maxOrder: number;
+  price: number;
+  discount: number;
+  quantity: number;
+  summary?: string;
 }

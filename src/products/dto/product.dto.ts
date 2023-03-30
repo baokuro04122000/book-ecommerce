@@ -1,5 +1,7 @@
+import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsDefined,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -7,24 +9,30 @@ import {
   Length,
   Max,
   Min,
+  ValidateNested,
 } from 'class-validator';
-export class CreateProductDto {
-  @IsNotEmpty()
-  @Length(1, 150)
-  name: string;
 
+export class InnerVariantDTO {
+  @IsDefined()
+  @IsNotEmpty()
+  @IsString()
+  type: 'kindle' | 'paperBack';
+
+  @IsDefined()
   @IsNotEmpty()
   @IsNumber()
   @Max(10000)
   @Min(0)
   quantity: number;
 
+  @IsDefined()
   @IsNotEmpty()
   @IsNumber()
   @Max(10000)
   @Min(0)
   maxOrder: number;
 
+  @IsDefined()
   @IsNotEmpty()
   @IsNumber()
   @Max(1000000000)
@@ -35,12 +43,24 @@ export class CreateProductDto {
   @IsNumber()
   @Max(100)
   @Min(0)
-  discountPercent: number;
+  discount: number;
+}
+
+export class InnerSpecsDTO {
+  @IsNotEmpty()
+  k: string | number;
 
   @IsNotEmpty()
-  @IsString()
-  @Length(1, 250)
-  summary: string;
+  v: string | number;
+}
+
+export class CreateProductDto {
+  @IsNotEmpty()
+  @Length(1, 150)
+  name: string;
+
+  @ValidateNested({ each: true })
+  variant: InnerVariantDTO[];
 
   @IsNotEmpty()
   @IsString()
@@ -54,9 +74,24 @@ export class CreateProductDto {
   @IsArray()
   productPictures: Array<string>;
 
+  @ValidateNested({ each: true })
+  @Type(() => InnerSpecsDTO)
+  specs: InnerSpecsDTO[];
+}
+
+export class QueryGetAll {
   @IsOptional()
-  specs: Array<any>;
+  name: string;
 
   @IsOptional()
-  variant: Array<any>;
+  sellerId: string;
+
+  @IsOptional()
+  page: number;
+
+  @IsOptional()
+  limit: number;
+
+  @IsOptional()
+  categoryId: string;
 }

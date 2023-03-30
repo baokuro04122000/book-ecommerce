@@ -20,35 +20,14 @@ const ProductSchema = new Schema(
       ref: 'categories',
       require: true,
     },
-    quantity: {
-      type: Number,
-      default: 0,
-    },
     slug: {
       type: String,
       required: true,
       unique: true,
     },
-    maxOrder: { type: Number, default: 5, required: true },
-    price: {
-      type: Number,
-      required: true,
-    },
-    discountPercent: {
-      type: Number,
-      default: 0,
-      min: 0,
-      max: 100,
-      required: true,
-    },
     description: {
       type: String,
       default: '',
-    },
-    summary: {
-      type: String,
-      default: 'hello',
-      index: true,
     },
     type: { type: String, default: 'book' },
     productPictures: [String],
@@ -79,15 +58,10 @@ export interface Product extends Document {
   name: string;
   sellerId?: Seller;
   category: Category;
-  quantity: number;
   slug?: string;
-  maxOrder?: string;
-  price: number;
-  discountPercent?: number;
   description?: string;
-  summary?: string;
   productPictures: [string];
-  variants: Variant;
+  variants: Variant[];
   release_date: Date;
   meta?: {
     totalSold: number;

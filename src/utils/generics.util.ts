@@ -1,5 +1,6 @@
 export interface INotifyResponse<T> {
   status: number;
-  message: string;
+  message?: string;
   data: T;
+  total?: number;
 }

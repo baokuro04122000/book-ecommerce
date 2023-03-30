@@ -6,7 +6,7 @@ POST {{HOST}}/signup
 Content-Type: application/json
 
 {
-  "email":"admin@admin.com",
+  "email":"baotrandinh.ute@gmail.com",
   "name":"bao tran",
   "nickName":"kuro",
   "gender":"male",
@@ -24,13 +24,13 @@ POST {{HOST}}/login
 Content-Type: application/json
 
 {
-  "email":"admin@admin.com",
+  "email":"baotrandinh.ute@gmail.com",
   "password":"hello123@"
 }
 
 ### request register seller
 GET {{HOST}}/seller/register
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDBjMjhkZDNhZGM1MTI3ZTU2YTNiZWMiLCJyb2xlIjoidXNlciIsImlhdCI6MTY3ODUxODU1MiwiZXhwIjoxNjc4NTIyMTUyfQ.mKB6ZtAGmDgmfninscj19eq27F4KJzvUozl-8rx_6f0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDBjMjhkZDNhZGM1MTI3ZTU2YTNiZWMiLCJyb2xlIjoidXNlciIsImlhdCI6MTY3OTU1NDczMywiZXhwIjoxNjc5NTU4MzMzfQ.refpnKJMw0_DZ6HkMNu81ApTWetzCXhMV24NRX9Hq5Y
 
 {}
 
