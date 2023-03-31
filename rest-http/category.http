@@ -1,8 +1,8 @@
-@HOST=http://localhost:8000/api/v1/category
+@HOST=http://localhost:9000/api/v1/category
 
 POST {{HOST}}/add
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDFhN2Y5OGQyMjVmOTM4OTk4ZTQxYzEiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2Nzk0NjUzMzEsImV4cCI6MTY3OTQ2ODkzMX0.qsOHCkPuoYabWAxWm-Qli0VMonairCLX6bI5QzjGSIU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI2OGIyZTVhODRhOTM3NDcxMzAwNTUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2ODAyNDc2NzMsImV4cCI6MTY4MDI1MTI3M30.5YA7XzKaNhQcK_2AV__Trug1S2EHgADruLpw39mvv0Q
 
 {
   "name":"Hormor"

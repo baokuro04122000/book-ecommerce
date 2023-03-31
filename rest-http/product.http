@@ -3,6 +3,56 @@
 ### add product
 POST {{HOST}}/add
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI2OGIwZDVhODRhOTM3NDcxMzAwNGUiLCJyb2xlIjoic2VsbGVyIiwiaWF0IjoxNjgwMjQ3OTY0LCJleHAiOjE2ODAyNTE1NjR9.NMuJVl0zJbgFlalcc5z4PXup8hF2yI6BsJ67HKfy9dM
+
+{
+  "name":"product 2",
+  "variants":[
+    {
+      "type":"kindle",
+      "quantity":50,
+      "maxOrder":10,
+      "price":5,
+      "discount":10
+    },
+    {
+      "type":"paperBack",
+      "quantity":100,
+      "maxOrder":20,
+      "price":20,
+      "discount": 10
+    }
+  ],
+  "description":"jghasd",
+  "category":"64268b895a84a9374713005d",
+  "productPictures":[],
+  "specs":[
+    {"k":"author", "v":"robin"},
+    {"k":"printLength", "v":200},
+    {"k":"publicDate", "v": "20/4/2022"}
+  ]
+}
+
+
+### get all products
+// have filter and pagination
+GET {{HOST}}/list?page=1&name=product+test+2
+
+### get product by slug
+GET {{HOST}}/
+
+
+### get product by category
+GET {{HOST}}/category?slug=slug
+
+### search feature
+// search in category and name of product
+GET {{HOST}}/search/keyword
+
+
+### update product
+PUT {{HOST}}/update?slug=slug
+Content-Type: application/json
 Authorization: Bearer 
 
 {
@@ -32,3 +82,5 @@ Authorization: Bearer
     {"k":"publicDate", "v": "20/4/2022"}
   ]
 }
+
+

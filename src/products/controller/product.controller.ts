@@ -12,6 +12,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { validateObjectId } from 'src/utils/helpers.utils';
 import { CreateProductDto } from '../dto/product.dto';
 import { ProductService } from '../service/product.service';
 
@@ -22,12 +23,18 @@ export class ProductController {
   @UseGuards(AuthGuard('jwt'))
   @Post('/add')
   async add(@Body() product: CreateProductDto, @Res() res, @Req() req) {
-    if (req.user !== 'seller') {
+    if (req.user.role !== 'seller') {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new HttpException('Bad request', HttpStatus.BAD_REQUEST));
     }
     if (!product.specs.length) {
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .json(new HttpException('Bad request', HttpStatus.BAD_REQUEST));
+    }
+
+    if (!validateObjectId(product.category)) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new HttpException('Bad request', HttpStatus.BAD_REQUEST));
@@ -85,7 +92,18 @@ export class ProductController {
 
   @UseGuards(AuthGuard('jwt'))
   @Put('update')
-  async update(@Body() body: CreateProductDto, @Req() Req, @Res() res) {
-    return res.json('nothing');
+  async update(@Body() body: CreateProductDto, @Req() req, @Res() res) {
+    const { slug } = req.query;
+    const { userId } = req.user;
+    try {
+      const payload = await this.productService.updateProduct(
+        body,
+        slug,
+        userId,
+      );
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      return res.status(error.status).json(error);
+    }
   }
 }

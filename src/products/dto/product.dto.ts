@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsDefined,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -12,11 +13,15 @@ import {
   ValidateNested,
 } from 'class-validator';
 
+export enum ProductType {
+  KINDLE = 'kindle',
+  PAPERBACK = 'paperBack',
+}
 export class InnerVariantDTO {
   @IsDefined()
   @IsNotEmpty()
-  @IsString()
-  type: 'kindle' | 'paperBack';
+  @IsEnum(ProductType)
+  type: ProductType;
 
   @IsDefined()
   @IsNotEmpty()
@@ -60,7 +65,8 @@ export class CreateProductDto {
   name: string;
 
   @ValidateNested({ each: true })
-  variant: InnerVariantDTO[];
+  @Type(() => InnerVariantDTO)
+  variants: InnerVariantDTO[];
 
   @IsNotEmpty()
   @IsString()

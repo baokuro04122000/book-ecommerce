@@ -1,4 +1,4 @@
-@HOST = http://localhost:8000/api/v1/auth
+@HOST = http://localhost:9000/api/v1/auth
 ### tk: admin@admin.com
 ### mk: hello123@
 ### sign up
@@ -6,8 +6,8 @@ POST {{HOST}}/signup
 Content-Type: application/json
 
 {
-  "email":"baotrandinh.ute@gmail.com",
-  "name":"bao tran",
+  "email":"admin@admin.com",
+  "name":"admin",
   "nickName":"kuro",
   "gender":"male",
   "birthDay":"2000-12-04",
@@ -30,7 +30,7 @@ Content-Type: application/json
 
 ### request register seller
 GET {{HOST}}/seller/register
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDBjMjhkZDNhZGM1MTI3ZTU2YTNiZWMiLCJyb2xlIjoidXNlciIsImlhdCI6MTY3OTU1NDczMywiZXhwIjoxNjc5NTU4MzMzfQ.refpnKJMw0_DZ6HkMNu81ApTWetzCXhMV24NRX9Hq5Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI2OGIwZDVhODRhOTM3NDcxMzAwNGUiLCJyb2xlIjoidXNlciIsImlhdCI6MTY4MDI0Nzg5NCwiZXhwIjoxNjgwMjUxNDk0fQ.lj8OFNvO7lux5L-nV33avkVu3WYZwZFWR4JyuRpIzIQ
 
 {}
 
@@ -39,7 +39,7 @@ POST {{HOST}}/seller/create
 Content-Type: application/json
 
 {
-  "token":"71590247-0604-490f-a9c6-eb4842eb38ca",
+  "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI2OGIwZDVhODRhOTM3NDcxMzAwNGUiLCJpYXQiOjE2ODAyNDc5MDQsImV4cCI6MTY4MDMzNDMwNH0.iW29zOm4aRibQPNU-136t-a6lxdp7uBowdwycy9RXaE",
   "name":"Test Shop",
   "phone":"0329460523",
   "address":[{

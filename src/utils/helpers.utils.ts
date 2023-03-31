@@ -1,3 +1,7 @@
+import mongoose from 'mongoose';
+const {
+  Types: { ObjectId },
+} = mongoose;
 type CustomError = {
   status: number;
   message: string;
@@ -16,3 +20,6 @@ export const handleRequest = (promise: any) => {
     .then((data) => [undefined, data])
     .catch((err) => [err, undefined]);
 };
+
+export const validateObjectId = (id) =>
+  ObjectId.isValid(id) && new ObjectId(id).toString() === id;

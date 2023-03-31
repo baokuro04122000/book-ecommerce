@@ -1,5 +1,7 @@
 import { Injectable, HttpStatus, Inject, Logger } from '@nestjs/common';
 import { Model } from 'mongoose';
+import slugify from 'slugify';
+import { generate } from 'shortid';
 import { Seller, SELLER_MODEL } from 'src/auth/model/seller.model';
 import { INotifyResponse } from 'src/utils/generics.util';
 import { User, USER_MODEL } from '../../auth/model/user.model';
@@ -10,6 +12,7 @@ import { errorResponse } from 'src/utils/helpers.utils';
 import { CreateProductDto } from '../dto/product.dto';
 import APIFeatures from 'src/utils/apiFeatures';
 import { ProductDetails } from '../types/product.type';
+
 @Injectable()
 export class ProductService {
   private logger = new Logger('Product service');
@@ -39,7 +42,10 @@ export class ProductService {
             errorResponse({ status: 401, message: Message.category_not_exist }),
           );
         }
-        await new this.productModel(product).save();
+        await new this.productModel({
+          ...product,
+          slug: slugify(product.name) + '-' + generate(),
+        }).save();
         return resolve({
           status: HttpStatus.CREATED,
           message: Message.add_product_success,
@@ -319,7 +325,7 @@ export class ProductService {
               description: product.description,
               productPictures: product.productPictures,
               specs: product.specs,
-              variants: product.variant,
+              variants: product.variants,
             },
           },
           { new: true },
