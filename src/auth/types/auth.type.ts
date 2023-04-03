@@ -1,6 +1,6 @@
 export interface ITokenPayload {
   token: string;
-  userId: string;
+  key: string;
 }
 
 export type UserLoginPayload = {

@@ -6,15 +6,19 @@ import {
   DatabaseModule,
   DATABASE_CONNECTION,
 } from 'src/database/mongodb.module';
-import { ProductController } from './controller/product.controller';
-import { CategorySchema, CATEGORY_MODEL } from './model/category.model';
-import { ProductSchema, PRODUCT_MODEL } from './model/product.model';
-import { ProductService } from './service/product.service';
+import { CartService } from '../service/cart.service';
+import {
+  CATEGORY_MODEL,
+  CategorySchema,
+} from 'src/products/model/category.model';
+import { PRODUCT_MODEL, ProductSchema } from 'src/products/model/product.model';
+import { CartController } from '../controller/cart.controller';
+import { CART_MODEL, CartSchema } from '../model/cart.model';
 
 @Module({
   imports: [DatabaseModule],
   providers: [
-    ProductService,
+    CartService,
     {
       provide: USER_MODEL,
       useFactory: (connect: Connection) => connect.model('users', UserSchema),
@@ -38,7 +42,12 @@ import { ProductService } from './service/product.service';
         connect.model('categories', CategorySchema),
       inject: [DATABASE_CONNECTION],
     },
+    {
+      provide: CART_MODEL,
+      useFactory: (connect: Connection) => connect.model('carts', CartSchema),
+      inject: [DATABASE_CONNECTION],
+    },
   ],
-  controllers: [ProductController],
+  controllers: [CartController],
 })
-export class ProductModule {}
+export class CartModule {}

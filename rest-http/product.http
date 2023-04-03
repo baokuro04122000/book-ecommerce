@@ -3,10 +3,10 @@
 ### add product
 POST {{HOST}}/add
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI2OGIwZDVhODRhOTM3NDcxMzAwNGUiLCJyb2xlIjoic2VsbGVyIiwiaWF0IjoxNjgwMjQ3OTY0LCJleHAiOjE2ODAyNTE1NjR9.NMuJVl0zJbgFlalcc5z4PXup8hF2yI6BsJ67HKfy9dM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI3ZGZmOTY0MjIxNzU5NzYyZGNhZDAiLCJyb2xlIjoic2VsbGVyIiwidGltZUNyZWF0ZWQiOjE2ODA0MzA2NzYxODcsImlhdCI6MTY4MDQzMDY3NiwiZXhwIjoxNjgwNDM0Mjc2fQ.QnmzJNWJVggFbG2D72gDKz3sxrcEQ94yRDW7zDVdjaI
 
 {
-  "name":"product 2",
+  "name":"new product 001",
   "variants":[
     {
       "type":"kindle",
@@ -24,7 +24,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI2O
     }
   ],
   "description":"jghasd",
-  "category":"64268b895a84a9374713005d",
+  "category":"6427e0f764221759762dcae3",
   "productPictures":[],
   "specs":[
     {"k":"author", "v":"robin"},
@@ -36,7 +36,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI2O
 
 ### get all products
 // have filter and pagination
-GET {{HOST}}/list?page=1&name=product+test+2
+GET {{HOST}}/list?page=2&limit=1&name=test
 
 ### get product by slug
 GET {{HOST}}/
@@ -47,23 +47,23 @@ GET {{HOST}}/category?slug=slug
 
 ### search feature
 // search in category and name of product
-GET {{HOST}}/search/keyword
+GET {{HOST}}/search/keyword=test
 
 
 ### update product
-PUT {{HOST}}/update?slug=slug
+PUT {{HOST}}/update?slug=product-1-dndM4Ml54
 Content-Type: application/json
-Authorization: Bearer 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI3ZGZmOTY0MjIxNzU5NzYyZGNhZDAiLCJyb2xlIjoic2VsbGVyIiwidGltZUNyZWF0ZWQiOjE2ODA0MjE0MDA5NDQsImlhdCI6MTY4MDQyMTQwMSwiZXhwIjoxNjgwNDI1MDAxfQ.LXXCdNEQXPwR4olu-COzpff-nbc87YYGEuTH3hagrhI
 
 {
-  "name":"product 1",
-  "variant":[
+  "name":"product edited",
+  "variants":[
     {
       "type":"kindle",
       "quantity":50,
       "maxOrder":10,
       "price":5,
-      "discount": 0
+      "discount": 10
     },
     {
       "type":"paperBack",
@@ -74,7 +74,7 @@ Authorization: Bearer
     }
   ],
   "description":"jghasd",
-  "category":"ashgd",
+  "category":"6427e0f764221759762dcae3",
   "productPictures":[],
   "specs":[
     {"k":"author", "v":"robin"},
@@ -83,4 +83,8 @@ Authorization: Bearer
   ]
 }
 
+### delete product by id
+DELETE {{HOST}}/delete/6429346e6524f716ca881a45
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI3ZGZmOTY0MjIxNzU5NzYyZGNhZDAiLCJyb2xlIjoic2VsbGVyIiwidGltZUNyZWF0ZWQiOjE2ODA0MjE0MDA5NDQsImlhdCI6MTY4MDQyMTQwMSwiZXhwIjoxNjgwNDI1MDAxfQ.LXXCdNEQXPwR4olu-COzpff-nbc87YYGEuTH3hagrhI
 
+{}

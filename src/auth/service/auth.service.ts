@@ -214,8 +214,8 @@ export class AuthService {
   checkTokenRedis(tokenPayload: ITokenPayload): Promise<boolean> {
     return new Promise(async (resolve, reject) => {
       try {
-        const userId = await this.redisClient.get(tokenPayload.token);
-        if (userId !== tokenPayload.userId) {
+        const token = await this.redisClient.get(tokenPayload.key);
+        if (token !== tokenPayload.token) {
           this.logger.error('Bad User........');
           return reject(
             errorResponse({
@@ -254,6 +254,7 @@ export class AuthService {
   }: UserLoginDto): Promise<INotifyResponse<UserLoginPayload>> {
     return new Promise(async (resolve, reject) => {
       try {
+        const timeCreated = Date.now();
         const account = await this.userModel
           .findOne({
             'local.email': email,
@@ -312,6 +313,7 @@ export class AuthService {
           {
             userId: account._id,
             role: account.role,
+            timeCreated: timeCreated,
           },
           process.env.TOKEN_SECRET || 'dinhbao',
           process.env.TTL_TOKEN_SECRET || '1h',
@@ -319,20 +321,21 @@ export class AuthService {
         const refreshToken = await this.generateToken(
           {
             userId: account._id,
+            timeCreated,
           },
           process.env.REFRESH_TOKEN || 'dinhbaorefresh',
           process.env.TTL_REFRESH_TOKEN || '7d',
         );
         const setAccess = this.setRedis(
+          `userId-accessToken-${account._id}-${timeCreated}`,
           accessToken,
-          account._id,
           Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
         );
 
         const setRefresh = this.setRedis(
+          `userId-refreshToken-${account._id}-${timeCreated}`,
           refreshToken,
-          account._id,
-          Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
+          Number(process.env.TTL_REDIS_REFRESH_TOKEN || 3600),
         );
         Promise.all([setAccess, setRefresh])
           .then((result) => {
@@ -588,6 +591,7 @@ export class AuthService {
   googleLogin(googleUser: any): Promise<INotifyResponse<UserLoginPayload>> {
     return new Promise(async (resolve, reject) => {
       try {
+        const timeCreated = Date.now();
         if (!googleUser.verified_email) {
           return reject({
             status: 203,
@@ -629,6 +633,7 @@ export class AuthService {
               {
                 userId: created._id,
                 role: created.role,
+                timeCreated,
               },
               process.env.TOKEN_SECRET || 'dinhbao',
               process.env.TTL_TOKEN_SECRET || '1h',
@@ -636,19 +641,20 @@ export class AuthService {
             const refreshToken = await this.generateToken(
               {
                 userId: created._id,
+                timeCreated,
               },
               process.env.REFRESH_TOKEN || 'dinhbaorefresh',
               process.env.TTL_REFRESH_TOKEN || '7d',
             );
             const setAccess = this.setRedis(
+              `userId-accessToken-${created._id}-${timeCreated}`,
               accessToken,
-              created._id,
               Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
             );
 
             const setRefresh = this.setRedis(
+              `userId-refreshToken-${created._id}-${timeCreated}`,
               refreshToken,
-              created._id,
               Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
             );
             Promise.all([setAccess, setRefresh])
@@ -725,6 +731,7 @@ export class AuthService {
               {
                 userId: updatedAccount._id,
                 role: updatedAccount.role,
+                timeCreated,
               },
               process.env.TOKEN_SECRET || 'dinhbao',
               process.env.TTL_TOKEN_SECRET || '1h',
@@ -732,19 +739,20 @@ export class AuthService {
             const refreshToken = await this.generateToken(
               {
                 userId: updatedAccount._id,
+                timeCreated,
               },
               process.env.REFRESH_TOKEN || 'dinhbaorefresh',
               process.env.TTL_REFRESH_TOKEN || '7d',
             );
             const setAccess = this.setRedis(
+              `userId-accessToken-${updatedAccount._id}-${timeCreated}`,
               accessToken,
-              updatedAccount._id,
               Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
             );
 
             const setRefresh = this.setRedis(
+              `userId-refreshToken-${updatedAccount._id}-${timeCreated}`,
               refreshToken,
-              updatedAccount._id,
               Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
             );
             Promise.all([setAccess, setRefresh])
@@ -789,6 +797,7 @@ export class AuthService {
           {
             userId: updatedAccount._id,
             role: updatedAccount.role,
+            timeCreated,
           },
           process.env.TOKEN_SECRET || 'dinhbao',
           process.env.TTL_TOKEN_SECRET || '1h',
@@ -796,19 +805,20 @@ export class AuthService {
         const refreshToken = await this.generateToken(
           {
             userId: updatedAccount._id,
+            timeCreated,
           },
           process.env.REFRESH_TOKEN || 'dinhbaorefresh',
           process.env.TTL_REFRESH_TOKEN || '7d',
         );
         const setAccess = this.setRedis(
+          `userId-accessToken-${updatedAccount._id}-${timeCreated}`,
           accessToken,
-          updatedAccount._id,
           Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
         );
 
         const setRefresh = this.setRedis(
+          `userId-refreshToken-${updatedAccount._id}-${timeCreated}`,
           refreshToken,
-          updatedAccount._id,
           Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
         );
         Promise.all([setAccess, setRefresh])
@@ -949,6 +959,7 @@ export class AuthService {
   refreshToken(token: string): Promise<INotifyResponse<UserLoginPayload>> {
     return new Promise(async (resolve, reject) => {
       try {
+        const timeCreated = Date.now();
         const encode = await this.jwt.verify(token, {
           secret: process.env.REFRESH_TOKEN || 'dinhbaorefresh',
         });
@@ -962,7 +973,10 @@ export class AuthService {
           );
         }
         //check token redis match or not
-        await this.checkTokenRedis(encode);
+        await this.checkTokenRedis({
+          token: token,
+          key: `userId-refreshToken-${encode.userId}-${encode.timeCreated}`,
+        });
         const account = await this.userModel
           .findOne({
             _id: encode.userId,
@@ -983,36 +997,24 @@ export class AuthService {
           {
             userId: account._id,
             role: account.role,
+            timeCreated,
           },
           process.env.TOKEN_SECRET || 'dinhbao',
           process.env.TTL_TOKEN_SECRET || '1h',
         );
-        const refreshToken = await this.generateToken(
-          {
-            userId: account._id,
-          },
-          process.env.REFRESH_TOKEN || 'dinhbaorefresh',
-          process.env.TTL_REFRESH_TOKEN || '7d',
-        );
-        const setAccess = this.setRedis(
-          accessToken,
-          account._id,
-          Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
-        );
 
-        const setRefresh = this.setRedis(
-          refreshToken,
-          account._id,
+        this.setRedis(
+          `userId-accessToken-${account._id}-${timeCreated}`,
+          accessToken,
           Number(process.env.TTL_REDIS_ACCESS_TOKEN || 3600),
-        );
-        Promise.all([setAccess, setRefresh])
-          .then((result) => {
-            this.logger.log('access::', result[0]);
-            this.logger.log('refresh::', result[1]);
+        )
+          .then((ok) => {
+            this.logger.log('access::', ok);
           })
           .catch((err) => {
             this.logger.error('redis error:::', err);
           });
+
         if (account.role === 'seller') {
           return resolve({
             status: HttpStatus.OK,
@@ -1021,7 +1023,7 @@ export class AuthService {
               ...payload,
               seller: account.seller,
               accessToken,
-              refreshToken,
+              refreshToken: token,
             },
           });
         }
@@ -1031,7 +1033,7 @@ export class AuthService {
           data: {
             ...payload,
             accessToken,
-            refreshToken,
+            refreshToken: token,
           },
         });
       } catch (error) {

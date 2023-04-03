@@ -22,13 +22,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     try {
       await this.authService.checkTokenRedis({
         token,
-        userId: payload.userId,
+        key: `userId-accessToken-${payload.userId}-${payload.timeCreated}`,
       });
       return {
         userId: payload.userId,
         role: payload.role,
+        timeCreated: payload.timeCreated,
       };
     } catch (error) {
+      console.log(error);
       throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
     }
   }

@@ -10,6 +10,7 @@ import {
   Get,
   Param,
   Put,
+  Delete,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { validateObjectId } from 'src/utils/helpers.utils';
@@ -23,10 +24,11 @@ export class ProductController {
   @UseGuards(AuthGuard('jwt'))
   @Post('/add')
   async add(@Body() product: CreateProductDto, @Res() res, @Req() req) {
+    console.log(req.user);
     if (req.user.role !== 'seller') {
       return res
-        .status(HttpStatus.BAD_REQUEST)
-        .json(new HttpException('Bad request', HttpStatus.BAD_REQUEST));
+        .status(HttpStatus.UNAUTHORIZED)
+        .json(new HttpException('Bad request', HttpStatus.UNAUTHORIZED));
     }
     if (!product.specs.length) {
       return res
@@ -41,7 +43,10 @@ export class ProductController {
     }
 
     try {
-      const payload = await this.productService.addProduct(product);
+      const payload = await this.productService.addProduct(
+        product,
+        req.user.userId,
+      );
       return res.status(payload.status).json(payload);
     } catch (error) {
       return res.status(error.status).json(error);
@@ -51,7 +56,7 @@ export class ProductController {
   @Get('/list')
   async all(@Req() req, @Res() res) {
     try {
-      const payload = await this.productService.getProduct(req.query);
+      const payload = await this.productService.getProducts(req.query);
       return res.status(payload.status).json(payload);
     } catch (error) {
       return res.status(error.status).json(error);
@@ -94,13 +99,35 @@ export class ProductController {
   @Put('update')
   async update(@Body() body: CreateProductDto, @Req() req, @Res() res) {
     const { slug } = req.query;
-    const { userId } = req.user;
+    const { userId, role } = req.user;
+    if (role !== 'seller') {
+      return res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json(new HttpException('Bad request', HttpStatus.UNAUTHORIZED));
+    }
     try {
       const payload = await this.productService.updateProduct(
         body,
         slug,
         userId,
       );
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('delete/:id')
+  async delete(@Param() id: string, @Req() req, @Res() res) {
+    const { userId, role } = req.user;
+    if (role !== 'seller') {
+      return res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json(new HttpException('Bad request', HttpStatus.UNAUTHORIZED));
+    }
+    try {
+      const payload = await this.productService.deleteProductById(id, userId);
       return res.status(payload.status).json(payload);
     } catch (error) {
       return res.status(error.status).json(error);

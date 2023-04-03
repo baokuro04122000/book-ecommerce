@@ -6,8 +6,8 @@ POST {{HOST}}/signup
 Content-Type: application/json
 
 {
-  "email":"admin@admin.com",
-  "name":"admin",
+  "email":"baotrandinh.ute@gmail.com",
+  "name":"bao tran",
   "nickName":"kuro",
   "gender":"male",
   "birthDay":"2000-12-04",
@@ -24,13 +24,13 @@ POST {{HOST}}/login
 Content-Type: application/json
 
 {
-  "email":"baotrandinh.ute@gmail.com",
+  "email":"admin@admin",
   "password":"hello123@"
 }
 
 ### request register seller
 GET {{HOST}}/seller/register
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI2OGIwZDVhODRhOTM3NDcxMzAwNGUiLCJyb2xlIjoidXNlciIsImlhdCI6MTY4MDI0Nzg5NCwiZXhwIjoxNjgwMjUxNDk0fQ.lj8OFNvO7lux5L-nV33avkVu3WYZwZFWR4JyuRpIzIQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI3ZGZmOTY0MjIxNzU5NzYyZGNhZDAiLCJyb2xlIjoidXNlciIsInRpbWVDcmVhdGVkIjoxNjgwMzM0ODcwODgzLCJpYXQiOjE2ODAzMzQ4NzEsImV4cCI6MTY4MDMzODQ3MX0.2XoszoWonOIk_XYxx2gWQt0jBxLKJHv60HwGg9tHA9M
 
 {}
 
@@ -39,7 +39,7 @@ POST {{HOST}}/seller/create
 Content-Type: application/json
 
 {
-  "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI2OGIwZDVhODRhOTM3NDcxMzAwNGUiLCJpYXQiOjE2ODAyNDc5MDQsImV4cCI6MTY4MDMzNDMwNH0.iW29zOm4aRibQPNU-136t-a6lxdp7uBowdwycy9RXaE",
+  "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI3ZGZmOTY0MjIxNzU5NzYyZGNhZDAiLCJpYXQiOjE2ODAzMzQ4ODYsImV4cCI6MTY4MDQyMTI4Nn0.i81glaUM4uWqjOemDLwFp7Lm9gE8aaczj4F8dOuJmwY",
   "name":"Test Shop",
   "phone":"0329460523",
   "address":[{

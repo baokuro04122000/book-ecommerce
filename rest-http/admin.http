@@ -1,0 +1,15 @@
+@HOST=http://localhost:9000/api/v1/admin
+
+POST {{HOST}}/user/logout
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI3ZGYxODMxNDc3MjhkMGVlYTU0NjQiLCJyb2xlIjoiYWRtaW4iLCJ0aW1lQ3JlYXRlZCI6MTY4MDMzNTA3MDc5MCwiaWF0IjoxNjgwMzM1MDcwLCJleHAiOjE2ODAzMzg2NzB9.NUlDp7LumPL6oDrpZBvJ5_o5V2ZskGnqYuwy06GXHCU
+
+{
+  "userId":"6427dff964221759762dcad0"
+}
+
+### get all user except admin role
+GET {{HOST}}/user/all
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI3ZGYxODMxNDc3MjhkMGVlYTU0NjQiLCJyb2xlIjoiYWRtaW4iLCJ0aW1lQ3JlYXRlZCI6MTY4MDQyMTAyNzI5NSwiaWF0IjoxNjgwNDIxMDI3LCJleHAiOjE2ODA0MjQ2Mjd9.VwO4brOG5poIHSClEyQGx_0ls4_5ekOLrShIHg94Hmc
+
+{}

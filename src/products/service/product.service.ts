@@ -1,5 +1,5 @@
 import { Injectable, HttpStatus, Inject, Logger } from '@nestjs/common';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import slugify from 'slugify';
 import { generate } from 'shortid';
 import { Seller, SELLER_MODEL } from 'src/auth/model/seller.model';
@@ -31,9 +31,13 @@ export class ProductService {
     return result;
   }
 
-  addProduct(product: CreateProductDto): Promise<INotifyResponse<null>> {
+  addProduct(
+    product: CreateProductDto,
+    sellerId: string,
+  ): Promise<INotifyResponse<null>> {
     return new Promise(async (resolve, reject) => {
       try {
+        console.log('here');
         const categoryExisted = await this.categoryModel
           .findById(product.category)
           .lean();
@@ -44,6 +48,7 @@ export class ProductService {
         }
         await new this.productModel({
           ...product,
+          sellerId,
           slug: slugify(product.name) + '-' + generate(),
         }).save();
         return resolve({
@@ -63,7 +68,7 @@ export class ProductService {
     });
   }
 
-  getProduct(query: any): Promise<INotifyResponse<ProductDetails[]>> {
+  getProducts(query: any): Promise<INotifyResponse<ProductDetails[]>> {
     return new Promise(async (resolve, reject) => {
       try {
         const apiFeaturesCountDocuments = new APIFeatures(
@@ -345,6 +350,61 @@ export class ProductService {
         });
       } catch (error) {
         console.log(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  deleteProductById(
+    id: string,
+    sellerId: string,
+  ): Promise<INotifyResponse<null>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const product = await this.productModel.findOne({
+          $and: [
+            { _id: new mongoose.Types.ObjectId(id) },
+            { sellerId: sellerId },
+          ],
+        });
+        if (!product) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.NOT_FOUND,
+              message: Message.product_not_found,
+            }),
+          );
+        }
+        if (product.meta.totalOrder !== 0) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.CONFLICT,
+              message: Message.product_order,
+            }),
+          );
+        }
+        if (product.meta.totalSold !== 0) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.CONFLICT,
+              message: Message.product_sold,
+            }),
+          );
+        }
+        const deleted = await product.remove();
+        console.log(deleted);
+        return resolve({
+          status: HttpStatus.OK,
+          message: Message.delete_success,
+          data: null,
+        });
+      } catch (error) {
+        this.logger.error(error);
         return reject(
           errorResponse({
             status: HttpStatus.INTERNAL_SERVER_ERROR,

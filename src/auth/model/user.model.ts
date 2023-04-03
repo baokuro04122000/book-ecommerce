@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema(
     google: {
       uid: { type: String },
       name: { type: String },
-      email: { type: String, trim: true, unique: true, index: true },
+      email: { type: String, required: false },
       picture: { type: String },
     },
     info: {

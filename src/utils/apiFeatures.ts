@@ -52,6 +52,26 @@ class APIFeatures {
     return this;
   }
 
+  userSearch() {
+    const userId = this.queryStr.userId
+      ? {
+          _id: this.queryStr.userId,
+        }
+      : {};
+    const name = this.queryStr.name
+      ? {
+          'info.name': { $regex: this.queryStr.name, $options: 'i' },
+        }
+      : {};
+
+    this.query = this.query.find({
+      ...userId,
+      ...name,
+      role: { $ne: 'admin' },
+    });
+    return this;
+  }
+
   filter() {
     const queryCopy = { ...this.queryStr };
 
@@ -68,6 +88,7 @@ class APIFeatures {
   }
 
   pagination(resPerPage = 10) {
+    // check max product 100
     const currentPage = Number(this.queryStr.page) || 1;
     const skip = resPerPage * (currentPage - 1);
 
