@@ -1,5 +1,6 @@
 import mongoose, { Document } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
+import { SellerSchema } from './seller.model';
 export const USER_MODEL = 'USER_MODEL';
 const UserSchema = new mongoose.Schema(
   {
@@ -138,10 +139,7 @@ export interface User extends Document {
   };
   status: string;
   role: string;
-  seller: {
-    type: mongoose.Schema.Types.ObjectId;
-    ref: 'sellers';
-  };
+  seller: any;
   meta: {
     totalBuy: number;
     totalCancel: number;

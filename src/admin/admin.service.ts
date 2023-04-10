@@ -116,4 +116,96 @@ export class AdminService {
       }
     });
   }
+
+  blockAccountById(userId: string): Promise<INotifyResponse<null>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const accessTokenList = await this.redisClient.keys(
+          `userId-accessToken-${userId}-*`,
+        );
+
+        const refreshTokenList = await this.redisClient.keys(
+          `userId-refreshToken-${userId}-*`,
+        );
+
+        if (!accessTokenList.length && !refreshTokenList.length) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.NOT_FOUND,
+              message: Message.user_not_login,
+            }),
+          );
+        }
+
+        const delList = [...accessTokenList, ...refreshTokenList];
+
+        if (refreshTokenList)
+          Promise.all(
+            delList.map((key) => {
+              return this.redisClient.del(key);
+            }),
+          )
+            .then(async (result) => {
+              this.logger.log('success::', ...result);
+
+              await this.userModel.updateOne(
+                {
+                  _id: userId,
+                },
+                {
+                  $set: {
+                    status: 'blocked',
+                  },
+                },
+              );
+              return resolve({
+                status: HttpStatus.OK,
+                message: 'block successfully',
+                data: null,
+              });
+            })
+            .catch((err) => {
+              this.logger.error(err);
+            });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  unBlockAccountById(userId: string): Promise<INotifyResponse<null>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await this.userModel.updateOne(
+          {
+            _id: userId,
+          },
+          {
+            $set: {
+              status: 'normal',
+            },
+          },
+        );
+        return resolve({
+          status: HttpStatus.OK,
+          message: 'block successfully',
+          data: null,
+        });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
 }

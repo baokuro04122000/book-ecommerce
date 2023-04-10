@@ -312,6 +312,7 @@ export class AuthService {
         const accessToken = await this.generateToken(
           {
             userId: account._id,
+            sellerId: account?.seller?._id,
             role: account.role,
             timeCreated: timeCreated,
           },
@@ -633,6 +634,7 @@ export class AuthService {
               {
                 userId: created._id,
                 role: created.role,
+                sellerId: created.seller,
                 timeCreated,
               },
               process.env.TOKEN_SECRET || 'dinhbao',
@@ -731,6 +733,7 @@ export class AuthService {
               {
                 userId: updatedAccount._id,
                 role: updatedAccount.role,
+                sellerId: updatedAccount.seller,
                 timeCreated,
               },
               process.env.TOKEN_SECRET || 'dinhbao',
@@ -797,6 +800,7 @@ export class AuthService {
           {
             userId: updatedAccount._id,
             role: updatedAccount.role,
+            sellerId: updatedAccount.seller,
             timeCreated,
           },
           process.env.TOKEN_SECRET || 'dinhbao',

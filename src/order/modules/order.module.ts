@@ -48,7 +48,7 @@ import {
     {
       provide: DELIVERY_INFO_MODEL,
       useFactory: (connect: Connection) =>
-        connect.model('categories', DeliveryInfoSchema),
+        connect.model('deliveryInfo', DeliveryInfoSchema),
       inject: [DATABASE_CONNECTION],
     },
   ],

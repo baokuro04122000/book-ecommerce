@@ -45,7 +45,7 @@ export class ProductController {
     try {
       const payload = await this.productService.addProduct(
         product,
-        req.user.userId,
+        req.user.sellerId,
       );
       return res.status(payload.status).json(payload);
     } catch (error) {
@@ -64,7 +64,7 @@ export class ProductController {
   }
 
   @Get('/:slug')
-  async detail(@Param() slug: string, @Res() res) {
+  async detail(@Param('slug') slug: string, @Res() res) {
     try {
       const payload = await this.productService.getProductBySlug(slug);
       return res.status(payload.status).json(payload);
@@ -77,6 +77,18 @@ export class ProductController {
   async list(@Req() req, @Res() res) {
     try {
       const payload = await this.productService.getProductsByCategorySlug(
+        req.query,
+      );
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @Get('/category/search')
+  async getAllByCategoryName(@Req() req, @Res() res) {
+    try {
+      const payload = await this.productService.getProductByCategoryName(
         req.query,
       );
       return res.status(payload.status).json(payload);
@@ -99,7 +111,7 @@ export class ProductController {
   @Put('update')
   async update(@Body() body: CreateProductDto, @Req() req, @Res() res) {
     const { slug } = req.query;
-    const { userId, role } = req.user;
+    const { sellerId, role } = req.user;
     if (role !== 'seller') {
       return res
         .status(HttpStatus.UNAUTHORIZED)
@@ -109,7 +121,7 @@ export class ProductController {
       const payload = await this.productService.updateProduct(
         body,
         slug,
-        userId,
+        sellerId,
       );
       return res.status(payload.status).json(payload);
     } catch (error) {

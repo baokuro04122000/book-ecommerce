@@ -10,6 +10,7 @@ import {
   Req,
   HttpException,
   HttpStatus,
+  Put,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminService } from './admin.service';
@@ -46,6 +47,40 @@ export class AdminController {
           .json(new HttpException('Bad request', HttpStatus.UNAUTHORIZED));
       }
       const payload = await this.adminService.getAllUsers(req.query);
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Put('user/block')
+  async block(@Body() { userId }: UserLogoutDto, @Res() res, @Req() req) {
+    try {
+      if (req.user.role !== 'admin') {
+        res
+          .status(HttpStatus.UNAUTHORIZED)
+          .json(new HttpException('Bad request', HttpStatus.UNAUTHORIZED));
+      }
+      const payload = await this.adminService.blockAccountById(userId);
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Put('user/unblock')
+  async unBlock(@Body() { userId }: UserLogoutDto, @Res() res, @Req() req) {
+    try {
+      if (req.user.role !== 'admin') {
+        res
+          .status(HttpStatus.UNAUTHORIZED)
+          .json(new HttpException('Bad request', HttpStatus.UNAUTHORIZED));
+      }
+      const payload = await this.adminService.unBlockAccountById(userId);
       return res.status(payload.status).json(payload);
     } catch (error) {
       console.log(error);

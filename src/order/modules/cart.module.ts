@@ -37,14 +37,14 @@ import { CART_MODEL, CartSchema } from '../model/cart.model';
       inject: [DATABASE_CONNECTION],
     },
     {
-      provide: CATEGORY_MODEL,
-      useFactory: (connect: Connection) =>
-        connect.model('categories', CategorySchema),
+      provide: CART_MODEL,
+      useFactory: (connect: Connection) => connect.model('carts', CartSchema),
       inject: [DATABASE_CONNECTION],
     },
     {
-      provide: CART_MODEL,
-      useFactory: (connect: Connection) => connect.model('carts', CartSchema),
+      provide: CATEGORY_MODEL,
+      useFactory: (connect: Connection) =>
+        connect.model('categories', CategorySchema),
       inject: [DATABASE_CONNECTION],
     },
   ],

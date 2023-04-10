@@ -1,4 +1,4 @@
-@HOST=http://localhost:9000/api/v1/product
+@HOST=http://localhost:8000/api/v1/product
 
 ### add product
 POST {{HOST}}/add
@@ -36,11 +36,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI3Z
 
 ### get all products
 // have filter and pagination
-GET {{HOST}}/list?page=2&limit=1&name=test
+GET {{HOST}}/list?page=2&limit=1&sellerId=6427dff964221759762dcad0
 
 ### get product by slug
 GET {{HOST}}/
 
+### get product by category name
+GET {{HOST}}/category/search?sellerId=6427e06064221759762dcadc&categoryName=ho
+
+{}
 
 ### get product by category
 GET {{HOST}}/category?slug=slug

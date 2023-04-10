@@ -3,6 +3,7 @@ export interface ProductDetails {
   seller: any;
   category: any;
   slug: string;
+  description: string;
   variant: Array<{
     type: string;
     maxOrder: number;
@@ -17,5 +18,6 @@ export interface ProductDetails {
     totalReview: number;
     totalRating: number;
   };
+  productPictures: string[];
   specs: any;
 }

@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 class APIFeatures {
   query: any;
   queryStr: any;
@@ -9,13 +11,13 @@ class APIFeatures {
   search() {
     const sellerId = this.queryStr.sellerId
       ? {
-          sellerId: this.queryStr.sellerId,
+          sellerId: new mongoose.Types.ObjectId(this.queryStr.sellerId),
         }
       : {};
 
     const categoryId = this.queryStr.categoryId
       ? {
-          category: this.queryStr.categoryId,
+          category: new mongoose.Types.ObjectId(this.queryStr.categoryId),
         }
       : {};
 
@@ -25,10 +27,22 @@ class APIFeatures {
         }
       : {};
 
+    const author = this.queryStr.author
+      ? {
+          specs: {
+            $elemMatch: {
+              k: 'author',
+              v: { $regex: this.queryStr.author, $options: 'i' },
+            },
+          },
+        }
+      : {};
+
     this.query = this.query.find({
       ...sellerId,
       ...categoryId,
       ...name,
+      ...author,
     });
     return this;
   }
@@ -36,12 +50,12 @@ class APIFeatures {
   sellerCategorySearch() {
     const sellerId = this.queryStr.sellerId
       ? {
-          sellerId: this.queryStr.sellerId,
+          sellerId: new mongoose.Types.ObjectId(this.queryStr.sellerId),
         }
       : {};
     const categoryId = this.queryStr.categoryId
       ? {
-          category: this.queryStr.categoryId,
+          category: new mongoose.Types.ObjectId(this.queryStr.categoryId),
         }
       : {};
 
@@ -55,7 +69,7 @@ class APIFeatures {
   userSearch() {
     const userId = this.queryStr.userId
       ? {
-          _id: this.queryStr.userId,
+          _id: new mongoose.Types.ObjectId(this.queryStr.userId),
         }
       : {};
     const name = this.queryStr.name
@@ -63,10 +77,23 @@ class APIFeatures {
           'info.name': { $regex: this.queryStr.name, $options: 'i' },
         }
       : {};
+    const email = this.queryStr.email
+      ? {
+          $or: [
+            {
+              'local.email': { $regex: this.queryStr.email, $options: 'i' },
+            },
+            {
+              'google.email': { $regex: this.queryStr.email, $options: 'i' },
+            },
+          ],
+        }
+      : {};
 
     this.query = this.query.find({
       ...userId,
       ...name,
+      ...email,
       role: { $ne: 'admin' },
     });
     return this;
@@ -76,23 +103,39 @@ class APIFeatures {
     const queryCopy = { ...this.queryStr };
 
     // Removing fields from the query
-    const removeFields = ['limit', 'page', 'sellerId', 'categoryId', 'name'];
+    const removeFields = [
+      'limit',
+      'page',
+      'sellerId',
+      'categoryId',
+      'name',
+      'categoryName',
+    ];
     removeFields.forEach((el) => delete queryCopy[el]);
 
     // Advance filter for price, ratings etc
     let queryStr = JSON.stringify(queryCopy);
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`);
 
-    this.query = this.query.find(JSON.parse(queryStr));
+    const sort = new Map([
+      ['desc', this.query.find(JSON.parse(queryStr)).sort({ createdAt: -1 })],
+      ['asec', this.query.find(JSON.parse(queryStr)).sort({ createdAt: 1 })],
+    ]);
+
+    this.query = sort.get(this.queryStr.order)
+      ? sort.get(this.queryStr.order)
+      : this.query.find(JSON.parse(queryStr)).sort({ createdAt: 1 });
+
     return this;
   }
 
   pagination(resPerPage = 10) {
+    const limit = resPerPage < 100 ? resPerPage : 10;
     // check max product 100
     const currentPage = Number(this.queryStr.page) || 1;
-    const skip = resPerPage * (currentPage - 1);
+    const skip = limit * (currentPage - 1);
 
-    this.query = this.query.limit(resPerPage).skip(skip);
+    this.query = this.query.limit(limit).skip(skip);
     return this;
   }
 }

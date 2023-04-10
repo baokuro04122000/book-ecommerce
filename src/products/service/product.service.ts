@@ -37,7 +37,6 @@ export class ProductService {
   ): Promise<INotifyResponse<null>> {
     return new Promise(async (resolve, reject) => {
       try {
-        console.log('here');
         const categoryExisted = await this.categoryModel
           .findById(product.category)
           .lean();
@@ -149,14 +148,16 @@ export class ProductService {
         }
 
         return resolve({
-          status: HttpStatus.FOUND,
+          status: HttpStatus.OK,
           data: {
+            productPictures: product.productPictures,
             name: product.name,
             seller: product.sellerId,
             category: product.category,
             slug: product.slug,
             variant: product.variants,
             meta: product.meta,
+            description: product.description,
             specs: this.specsResponse(product.specs),
           },
         });
@@ -299,6 +300,106 @@ export class ProductService {
         return resolve({
           status: HttpStatus.FOUND,
           data: payload,
+        });
+      } catch (error) {
+        console.log(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  getProductByCategoryName(queryStr: any): Promise<INotifyResponse<any>> {
+    return new Promise(async (resolve, reject) => {
+      console.log('queryStr', queryStr);
+      const searchBySellerId = queryStr.sellerId
+        ? { sellerId: new mongoose.Types.ObjectId(queryStr.sellerId) }
+        : {};
+      let limit = 10;
+      if (queryStr.limit) {
+        limit = Number(queryStr.limit) < 100 ? Number(queryStr.limit) : 10;
+      }
+      // check max product 100
+      const currentPage = Number(queryStr.page) || 1;
+      const skip = limit * (currentPage - 1);
+
+      const list = this.productModel.aggregate([
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'category',
+          },
+        },
+        {
+          $match: {
+            $and: [
+              searchBySellerId,
+              {
+                'category.name': {
+                  $regex: queryStr.categoryName,
+                  $options: 'i',
+                },
+              },
+            ],
+          },
+        },
+        {
+          $unwind: '$category',
+        },
+        {
+          $skip: skip,
+        },
+        { $limit: limit },
+      ]);
+
+      const countDocuments = this.productModel.aggregate([
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'category',
+          },
+        },
+        {
+          $match: {
+            $and: [
+              searchBySellerId,
+              {
+                'category.name': {
+                  $regex: queryStr.categoryName,
+                  $options: 'i',
+                },
+              },
+            ],
+          },
+        },
+        {
+          $count: 'name',
+        },
+      ]);
+
+      try {
+        const [totalProduct, products] = await Promise.all([
+          countDocuments,
+          list,
+        ]);
+        console.log('total', totalProduct);
+        const productPayload = products.map((product) => ({
+          ...product,
+          specs: this.specsResponse(product.specs),
+        }));
+        return resolve({
+          status: HttpStatus.OK,
+          message: '',
+          data: productPayload,
+          total: totalProduct[0]?.name || 0,
         });
       } catch (error) {
         console.log(error);

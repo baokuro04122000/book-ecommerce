@@ -24,7 +24,7 @@ export class CategoryService {
   addCategory({
     name,
     categoryImage,
-  }: CreateCategoryDto): Promise<INotifyResponse<null>> {
+  }: CreateCategoryDto): Promise<INotifyResponse<any>> {
     return new Promise(async (resolve, reject) => {
       try {
         const existed = await this.categoryModel.findOne({
@@ -38,7 +38,7 @@ export class CategoryService {
             }),
           );
         }
-        await new this.categoryModel({
+        const created = await new this.categoryModel({
           name: name,
           categoryImage: categoryImage ? categoryImage : '',
           slug: `${slugify(name)}-${generate()}`,
@@ -46,7 +46,7 @@ export class CategoryService {
         return resolve({
           status: HttpStatus.OK,
           message: Message.add_category_success,
-          data: null,
+          data: created,
         });
       } catch (error) {
         this.logger.error(error);
@@ -60,19 +60,19 @@ export class CategoryService {
     });
   }
 
-  editCategory({
-    name,
-    categoryImage,
-  }: CreateCategoryDto): Promise<INotifyResponse<null>> {
+  editCategory(
+    category: CreateCategoryDto,
+    slug: string,
+  ): Promise<INotifyResponse<null>> {
     return new Promise(async (resolve, reject) => {
       try {
         const existed = await this.categoryModel.findOneAndUpdate(
           {
-            name: name,
+            slug: slug,
           },
           {
-            name: name,
-            categoryImage: categoryImage,
+            name: category.name,
+            categoryImage: category.categoryImage,
           },
           {
             upsert: true,
@@ -91,6 +91,37 @@ export class CategoryService {
           status: HttpStatus.OK,
           message: Message.update_success,
           data: null,
+        });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  getAllCategories(): Promise<INotifyResponse<any>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const categories = await this.categoryModel
+          .find({})
+          .sort({ createdAt: -1 })
+          .lean();
+        if (!categories) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.BAD_REQUEST,
+              message: Message.category_empty,
+            }),
+          );
+        }
+        return resolve({
+          status: HttpStatus.OK,
+          data: categories,
         });
       } catch (error) {
         this.logger.error(error);
