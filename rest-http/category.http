@@ -1,4 +1,4 @@
-@HOST=http://localhost:9000/api/v1/category
+@HOST=http://localhost:8000/api/v1/category
 
 POST {{HOST}}/add
 Content-Type: application/json
@@ -7,3 +7,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI3Z
 {
   "name":"Comedi"
 }
+
+### get all categories
+GET {{HOST}}/all
+Content-Type: application/json
+
+{}

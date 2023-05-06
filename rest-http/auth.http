@@ -1,4 +1,4 @@
-@HOST = http://localhost:9000/api/v1/auth
+@HOST = http://localhost:8000/api/v1/auth
 ### tk: admin@admin.com
 ### mk: hello123@
 ### sign up
@@ -6,7 +6,7 @@ POST {{HOST}}/signup
 Content-Type: application/json
 
 {
-  "email":"baotrandinh.ute@gmail.com",
+  "email":"baotrandinh100@gmail.com",
   "name":"bao tran",
   "nickName":"kuro",
   "gender":"male",

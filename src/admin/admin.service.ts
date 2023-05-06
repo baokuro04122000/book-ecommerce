@@ -102,7 +102,15 @@ export class AdminService {
         return resolve({
           status: HttpStatus.OK,
           message: '',
-          data: users,
+          data: users.map((user) => ({
+            ...user,
+            local: {
+              ...user.local,
+              password: null,
+            },
+            name: user.info.name,
+            email: user.local.email ? user.local.email : user.google.email,
+          })),
           total: totalUsers,
         });
       } catch (error) {
@@ -129,12 +137,21 @@ export class AdminService {
         );
 
         if (!accessTokenList.length && !refreshTokenList.length) {
-          return reject(
-            errorResponse({
-              status: HttpStatus.NOT_FOUND,
-              message: Message.user_not_login,
-            }),
+          await this.userModel.updateOne(
+            {
+              _id: userId,
+            },
+            {
+              $set: {
+                status: 'blocked',
+              },
+            },
           );
+          return resolve({
+            status: HttpStatus.OK,
+            message: 'block successfully',
+            data: null,
+          });
         }
 
         const delList = [...accessTokenList, ...refreshTokenList];
@@ -194,7 +211,7 @@ export class AdminService {
         );
         return resolve({
           status: HttpStatus.OK,
-          message: 'block successfully',
+          message: 'unblock successfully',
           data: null,
         });
       } catch (error) {

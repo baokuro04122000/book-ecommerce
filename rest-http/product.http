@@ -92,3 +92,9 @@ DELETE {{HOST}}/delete/6429346e6524f716ca881a45
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI3ZGZmOTY0MjIxNzU5NzYyZGNhZDAiLCJyb2xlIjoic2VsbGVyIiwidGltZUNyZWF0ZWQiOjE2ODA0MjE0MDA5NDQsImlhdCI6MTY4MDQyMTQwMSwiZXhwIjoxNjgwNDI1MDAxfQ.LXXCdNEQXPwR4olu-COzpff-nbc87YYGEuTH3hagrhI
 
 {}
+
+### get best selling
+
+GET {{HOST}}/best-selling/get
+
+{}

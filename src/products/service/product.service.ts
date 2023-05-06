@@ -515,4 +515,48 @@ export class ProductService {
       }
     });
   }
+
+  bestSelling(): Promise<INotifyResponse<any>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const products = await this.productModel
+          .find({})
+          .sort({
+            'meta.totalSold': -1,
+          })
+          .skip(0)
+          .limit(10)
+          .populate({
+            path: 'category',
+            select: 'name _id',
+          })
+          .lean();
+        if (!products) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.NOT_FOUND,
+              message: Message.product_not_found,
+            }),
+          );
+        }
+        return resolve({
+          status: HttpStatus.OK,
+          data: products.map((product) => {
+            return {
+              ...product,
+              specs: this.specsResponse(product.specs),
+            };
+          }),
+        });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
 }

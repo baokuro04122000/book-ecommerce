@@ -145,4 +145,14 @@ export class ProductController {
       return res.status(error.status).json(error);
     }
   }
+
+  @Get('best-selling/get')
+  async getBestSelling(@Req() req, @Res() res) {
+    try {
+      const payload = await this.productService.bestSelling();
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      return res.status(error.status).json(error);
+    }
+  }
 }
