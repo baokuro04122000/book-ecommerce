@@ -17,12 +17,12 @@ import { AuthGuard } from '@nestjs/passport';
 import { CreateCategoryDto } from '../dto/category.dto';
 import { CategoryService } from '../service/category.service';
 
-@Controller('api/v1/category/')
+@Controller('api/v1')
 export class CategoryController {
   constructor(private categoryService: CategoryService) {}
 
   @UseGuards(AuthGuard('jwt'))
-  @Post('/add')
+  @Post('/category/add')
   async add(@Body() category: CreateCategoryDto, @Res() res, @Req() req) {
     try {
       if (req.user.role !== 'admin') {
@@ -39,7 +39,7 @@ export class CategoryController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Put('/edit')
+  @Put('/category/edit')
   async edit(
     @Body() category: CreateCategoryDto,
     @Res() res,
@@ -60,10 +60,44 @@ export class CategoryController {
     }
   }
 
-  @Get('/all')
+  @Get('/category/all')
   async all(@Res() res, @Req() req) {
     try {
       const payload = await this.categoryService.getAllCategories();
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @Get('/category/all-amount')
+  async allCategoriesWithProduct(@Res() res, @Req() req) {
+    try {
+      const payload =
+        await this.categoryService.getAllCategoriesWithAmountProducts();
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @Get('/sellers')
+  async getSellers(@Res() res, @Req() req) {
+    try {
+      const payload = await this.categoryService.getSellers();
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @Get('/sellers/top3')
+  async getSellersTop3(@Res() res, @Req() req) {
+    try {
+      const payload = await this.categoryService.getSellersTop3();
       return res.status(payload.status).json(payload);
     } catch (error) {
       console.log(error);

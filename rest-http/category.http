@@ -13,3 +13,15 @@ GET {{HOST}}/all
 Content-Type: application/json
 
 {}
+
+### get all category with amount
+GET {{HOST}}/all-amount
+Content-Type: application/json
+
+{}
+
+### get sellers
+GET http://localhost:8000/api/v1/sellers
+
+### get top 3 sellers
+GET http://localhost:8000/api/v1/sellers/top3

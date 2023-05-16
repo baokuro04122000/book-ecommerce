@@ -155,7 +155,7 @@ export class ProductService {
             seller: product.sellerId,
             category: product.category,
             slug: product.slug,
-            variant: product.variants,
+            variants: product.variants,
             meta: product.meta,
             description: product.description,
             specs: this.specsResponse(product.specs),
@@ -257,8 +257,6 @@ export class ProductService {
   }
   searchFeature(keyword: string): Promise<INotifyResponse<any>> {
     return new Promise(async (resolve, reject) => {
-      console.log(keyword);
-
       const resultCategory = this.categoryModel
         .find({
           name: {
@@ -266,7 +264,7 @@ export class ProductService {
             $options: 'i',
           },
         })
-        .select('slug name categoryImage')
+        .select('slug name categoryImage _id')
         .lean();
 
       const resultProduct = this.productModel
@@ -276,11 +274,39 @@ export class ProductService {
             $options: 'i',
           },
         })
-        .select('name slug')
+        .select('name slug _id')
         .lean();
+
+      const resultSellers = this.sellerModel
+        .find({
+          'info.name': {
+            $regex: keyword.length > 1 ? keyword : '^' + keyword,
+            $options: 'i',
+          },
+        })
+        .select('info _id')
+        .lean();
+
+      const resultAuthor = this.productModel
+        .find({
+          specs: {
+            $elemMatch: {
+              k: 'author',
+              v: {
+                $regex: keyword.length > 1 ? keyword : '^' + keyword,
+                $options: 'i',
+              },
+            },
+          },
+        })
+        .select('specs')
+        .lean();
+
       try {
-        const [categories, products] = await Promise.all([
+        const [categories, sellers, authors, products] = await Promise.all([
           resultCategory,
+          resultSellers,
+          resultAuthor,
           resultProduct,
         ]);
         const payload = [
@@ -288,6 +314,18 @@ export class ProductService {
             return {
               ...category,
               type: 'category',
+            };
+          }),
+          ...sellers.map((seller) => {
+            return {
+              ...seller,
+              type: 'seller',
+            };
+          }),
+          ...authors.map((author) => {
+            return {
+              ...this.specsResponse(author.specs),
+              type: 'author',
             };
           }),
           ...products.map((product) => {
@@ -298,7 +336,7 @@ export class ProductService {
           }),
         ];
         return resolve({
-          status: HttpStatus.FOUND,
+          status: HttpStatus.OK,
           data: payload,
         });
       } catch (error) {
@@ -390,7 +428,7 @@ export class ProductService {
           countDocuments,
           list,
         ]);
-        console.log('total', totalProduct);
+
         const productPayload = products.map((product) => ({
           ...product,
           specs: this.specsResponse(product.specs),
@@ -530,6 +568,10 @@ export class ProductService {
             path: 'category',
             select: 'name _id',
           })
+          .populate({
+            path: 'sellerId',
+            select: 'info _id',
+          })
           .lean();
         if (!products) {
           return reject(
@@ -550,6 +592,246 @@ export class ProductService {
         });
       } catch (error) {
         this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  featureProduct(): Promise<INotifyResponse<any>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const admin = await this.userModel
+          .findOne({
+            role: 'admin',
+          })
+          .lean();
+        if (!admin) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.NOT_FOUND,
+              message: 'admin not found',
+            }),
+          );
+        }
+        const productId: any = admin.specs.find(
+          (product: any) => product.k === 'featured',
+        );
+        const product = await this.productModel
+          .findOne({
+            _id: productId.v,
+          })
+          .populate({
+            path: 'category',
+            select: 'name _id',
+          })
+          .populate({
+            path: 'sellerId',
+            select: 'info _id',
+          })
+          .lean();
+
+        return resolve({
+          status: HttpStatus.OK,
+          data: {
+            ...product,
+            specs: this.specsResponse(product?.specs),
+          },
+        });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  newReleaseProduct(query: any): Promise<INotifyResponse<any>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const products = await new APIFeatures(
+          this.productModel.find({}).sort({
+            createdAt: -1,
+          }),
+          query,
+        )
+          .pagination(query.limit)
+          .query.populate({
+            path: 'category',
+            select: 'name _id',
+          })
+          .populate({
+            path: 'sellerId',
+            select: 'info _id',
+          })
+          .lean();
+
+        const payload = products.map((product) => ({
+          ...product,
+          specs: this.specsResponse(product.specs),
+        }));
+
+        return resolve({
+          status: HttpStatus.OK,
+          data: payload,
+        });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  relatedProducts(categoryId: string): Promise<INotifyResponse<any>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const products = await this.productModel
+          .find({
+            category: categoryId,
+          })
+          .populate({
+            path: 'category',
+            select: 'name _id',
+          })
+          .populate({
+            path: 'sellerId',
+            select: 'info _id',
+          })
+          .lean();
+        const makeProducts = products.map((product) => ({
+          ...product,
+          specs: this.specsResponse(product.specs),
+        }));
+        if (products.length < 10) {
+          return resolve({
+            status: HttpStatus.OK,
+            data: makeProducts,
+          });
+        }
+        const payload: any = [
+          makeProducts[Math.floor(Math.random() * products.length)],
+          makeProducts[Math.floor(Math.random() * products.length)],
+          makeProducts[Math.floor(Math.random() * products.length)],
+          makeProducts[Math.floor(Math.random() * products.length)],
+          makeProducts[Math.floor(Math.random() * products.length)],
+          makeProducts[Math.floor(Math.random() * products.length)],
+          makeProducts[Math.floor(Math.random() * products.length)],
+          makeProducts[Math.floor(Math.random() * products.length)],
+          makeProducts[Math.floor(Math.random() * products.length)],
+          makeProducts[Math.floor(Math.random() * products.length)],
+        ];
+        return resolve({
+          status: HttpStatus.OK,
+          data: payload,
+        });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  getProductsByAuthor(query: any): Promise<INotifyResponse<any>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const [products, totalProduct] = await Promise.all([
+          new APIFeatures(
+            this.productModel.find({
+              specs: {
+                $elemMatch: { k: 'author', v: query.author },
+              },
+            }),
+            query,
+          ) // (2)
+            .filter()
+            .pagination(query.limit)
+            .query.populate({
+              path: 'category',
+              select: 'name _id',
+            })
+            .populate({
+              path: 'sellerId',
+              select: 'info _id',
+            })
+            .lean(),
+          new APIFeatures(
+            this.productModel.find({
+              specs: {
+                $elemMatch: { k: 'author', v: query.author },
+              },
+            }),
+            query,
+          ) // (2)
+            .filter()
+            .query.lean(),
+        ]);
+        const makeProducts = products.map((product) => ({
+          ...product,
+          specs: this.specsResponse(product.specs),
+        }));
+        return resolve({
+          status: HttpStatus.OK,
+          data: makeProducts,
+          total: totalProduct?.length,
+        });
+      } catch (error) {
+        console.log('err::', error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  updateTypeMigration(): Promise<INotifyResponse<any>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const products = await this.productModel.find({}).lean();
+
+        await Promise.all(
+          products.map((product) => {
+            const variants = product.variants.map((variant) => ({
+              ...variant,
+              price: Number(variant.price),
+            }));
+            return this.productModel.updateOne(
+              { _id: product._id },
+              {
+                $set: {
+                  variants: variants,
+                },
+              },
+            );
+          }),
+        );
+
+        return resolve({
+          status: HttpStatus.OK,
+          data: 'success',
+        });
+      } catch (error) {
+        console.log('err::', error);
         return reject(
           errorResponse({
             status: HttpStatus.INTERNAL_SERVER_ERROR,

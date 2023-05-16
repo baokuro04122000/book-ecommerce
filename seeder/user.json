@@ -1,0 +1,106 @@
+[
+  {
+    "local": {
+      "email": "user01@gmail.com",
+      "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+      "verified": true
+    },
+    "info": {
+      "name": "Janis Schaefer",
+      "gender": "female",
+      "birthDay": "1980-10-27T17:56:08.130Z",
+      "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/671.jpg"
+    }
+  },
+  {
+    "local": {
+      "email": "user02@gmail.com",
+      "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+      "verified": true
+    },
+    "info": {
+      "name": "Dr. Ada Reynolds",
+      "gender": "female",
+      "birthDay": "1945-11-11T14:01:28.132Z",
+      "avatar": "https://avatars.githubusercontent.com/u/77857123"
+    }
+  },
+  {
+    "local": {
+      "email": "user03@gmail.com",
+      "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+      "verified": true
+    },
+    "info": {
+      "name": "Betsy Turcotte",
+      "gender": "male",
+      "birthDay": "1971-03-29T04:52:56.712Z",
+      "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/502.jpg"
+    }
+  },
+  {
+    "local": {
+      "email": "user04@gmail.com",
+      "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+      "verified": true
+    },
+    "info": {
+      "name": "Connie Klocko",
+      "gender": "male",
+      "birthDay": "1955-05-10T18:00:00.916Z",
+      "avatar": "https://avatars.githubusercontent.com/u/21276769"
+    }
+  },
+  {
+    "local": {
+      "email": "user05@gmail.com",
+      "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+      "verified": true
+    },
+    "info": {
+      "name": "Emma DuBuque",
+      "gender": "female",
+      "birthDay": "1965-08-30T04:13:20.267Z",
+      "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/149.jpg"
+    }
+  },
+  {
+    "local": {
+      "email": "user06@gmail.com",
+      "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+      "verified": true
+    },
+    "info": {
+      "name": "Kristopher Gulgowski",
+      "gender": "male",
+      "birthDay": "1993-12-07T17:16:25.439Z",
+      "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/750.jpg"
+    }
+  },
+  {
+    "local": {
+      "email": "user07@gmail.com",
+      "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+      "verified": true
+    },
+    "info": {
+      "name": "Kyle Emmerich III",
+      "gender": "male",
+      "birthDay": "1966-07-16T00:56:40.927Z",
+      "avatar": "https://avatars.githubusercontent.com/u/50558459"
+    }
+  },
+  {
+    "local": {
+      "email": "user08@gmail.com",
+      "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+      "verified": true
+    },
+    "info": {
+      "name": "Leigh Howell",
+      "gender": "female",
+      "birthDay": "1986-05-06T19:38:12.937Z",
+      "avatar": "https://avatars.githubusercontent.com/u/72590870"
+    }
+  }
+]

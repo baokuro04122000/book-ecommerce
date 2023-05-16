@@ -11,6 +11,7 @@ import {
   Param,
   Put,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { validateObjectId } from 'src/utils/helpers.utils';
@@ -98,7 +99,7 @@ export class ProductController {
   }
 
   @Get('/search/:keyword')
-  async search(@Param() keyword: string, @Res() res) {
+  async search(@Param('keyword') keyword: string, @Res() res) {
     try {
       const payload = await this.productService.searchFeature(keyword);
       return res.status(payload.status).json(payload);
@@ -150,6 +151,56 @@ export class ProductController {
   async getBestSelling(@Req() req, @Res() res) {
     try {
       const payload = await this.productService.bestSelling();
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @Get('featured/get')
+  async getFeaturedProduct(@Req() req, @Res() res) {
+    try {
+      const payload = await this.productService.featureProduct();
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @Get('new-release/get')
+  async newReleaseProduct(@Query() query, @Res() res) {
+    try {
+      const payload = await this.productService.newReleaseProduct(query);
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @Get('related-product/get')
+  async relatedProducts(@Query('categoryId') query, @Res() res) {
+    try {
+      const payload = await this.productService.relatedProducts(query);
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @Get('author/get')
+  async productsByAuthor(@Query() query, @Res() res) {
+    try {
+      const payload = await this.productService.getProductsByAuthor(query);
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @Get('migration/type')
+  async migrationType(@Query() query, @Res() res) {
+    try {
+      const payload = await this.productService.updateTypeMigration();
       return res.status(payload.status).json(payload);
     } catch (error) {
       return res.status(error.status).json(error);

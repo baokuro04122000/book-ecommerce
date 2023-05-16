@@ -19,15 +19,12 @@ export class CreateUserDto {
   @Length(2, 30)
   name: string;
 
-  @IsOptional()
-  nickName?: string;
-
   @IsNotEmpty()
   @Length(3, 15)
   gender: string;
 
   @IsNotEmpty()
-  @IsDateString()
+  @IsString()
   birthDay: string;
 
   @IsOptional()

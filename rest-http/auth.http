@@ -1,5 +1,5 @@
 @HOST = http://localhost:8000/api/v1/auth
-### tk: admin@admin.com
+### tk: admin@gmail.admin.com
 ### mk: hello123@
 ### sign up
 POST {{HOST}}/signup
@@ -8,7 +8,6 @@ Content-Type: application/json
 {
   "email":"baotrandinh100@gmail.com",
   "name":"bao tran",
-  "nickName":"kuro",
   "gender":"male",
   "birthDay":"2000-12-04",
   "password":"hello123@"
@@ -24,7 +23,7 @@ POST {{HOST}}/login
 Content-Type: application/json
 
 {
-  "email":"admin@admin",
+  "email":"admin@gmail.admin.com",
   "password":"hello123@"
 }
 

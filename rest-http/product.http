@@ -36,10 +36,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI3Z
 
 ### get all products
 // have filter and pagination
-GET {{HOST}}/list?page=2&limit=1&sellerId=6427dff964221759762dcad0
+GET {{HOST}}/list?page=1&limit=8&name=Borges&author=Borges
 
 ### get product by slug
-GET {{HOST}}/
+GET {{HOST}}/Let-The-Good-Times-Roll-Up-hcUMFC6m0
 
 ### get product by category name
 GET {{HOST}}/category/search?sellerId=6427e06064221759762dcadc&categoryName=ho
@@ -51,7 +51,7 @@ GET {{HOST}}/category?slug=slug
 
 ### search feature
 // search in category and name of product
-GET {{HOST}}/search/keyword=test
+GET {{HOST}}/search/bo
 
 
 ### update product
@@ -98,3 +98,25 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI3Z
 GET {{HOST}}/best-selling/get
 
 {}
+
+### get featured product
+GET {{HOST}}/featured/get
+Content-Type: application/json
+
+### get new release  product
+GET {{HOST}}/new-release/get?page=1&limit=3
+Content-Type: application/json
+
+{}
+
+### get related product
+GET {{HOST}}/related-product/get?categoryId=64569ccb3d40716d5ffcdbd6
+Content-Type: application/json
+
+{}
+
+### get products by author
+GET {{HOST}}/author/get?author=Tommy&page=1&limit=8&price[gt]=12
+
+### migrate type
+GET {{HOST}}/migration/type

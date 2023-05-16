@@ -19,7 +19,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "redis-commander": "redis-commander --redis-port 7000 --redis-host localhost"
+    "redis-commander": "redis-commander --redis-port 7000 --redis-host localhost",
+    "seeder": "node seeder/import.js"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
@@ -47,6 +48,7 @@
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.0.0",
     "@nestjs/cli": "^8.0.0",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^8.0.0",

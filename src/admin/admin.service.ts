@@ -225,4 +225,54 @@ export class AdminService {
       }
     });
   }
+
+  setFeaturedProduct(
+    userId: string,
+    productId: string,
+  ): Promise<INotifyResponse<null>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const admin = await this.userModel
+          .findOne({
+            _id: userId,
+          })
+          .lean();
+
+        let specs = admin.specs.map((ele: any) => {
+          if (ele.k === 'featured') {
+            return {
+              k: 'featured',
+              v: productId,
+            };
+          }
+          return ele;
+        });
+
+        if (!specs.find((ele) => ele.k === 'featured')) {
+          specs = [...specs, { k: 'featured', v: productId }];
+        }
+        await this.userModel.updateOne(
+          { _id: userId },
+          {
+            $set: {
+              specs: specs,
+            },
+          },
+        );
+        return resolve({
+          status: HttpStatus.OK,
+          message: 'Set featured product successfully',
+          data: null,
+        });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
 }

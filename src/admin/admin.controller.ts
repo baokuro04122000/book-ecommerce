@@ -11,10 +11,11 @@ import {
   HttpException,
   HttpStatus,
   Put,
+  Patch,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminService } from './admin.service';
-import { UserLogoutDto } from './dto/admin.dto';
+import { SetFeaturedProductDto, UserLogoutDto } from './dto/admin.dto';
 
 @Controller('api/v1/admin/')
 export class AdminController {
@@ -81,6 +82,30 @@ export class AdminController {
           .json(new HttpException('Bad request', HttpStatus.UNAUTHORIZED));
       }
       const payload = await this.adminService.unBlockAccountById(userId);
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('product/featured')
+  async setFeaturedProduct(
+    @Body() { productId }: SetFeaturedProductDto,
+    @Res() res,
+    @Req() req,
+  ) {
+    try {
+      if (req.user.role !== 'admin') {
+        res
+          .status(HttpStatus.UNAUTHORIZED)
+          .json(new HttpException('Bad request', HttpStatus.UNAUTHORIZED));
+      }
+      const payload = await this.adminService.setFeaturedProduct(
+        req.user.userId,
+        productId,
+      );
       return res.status(payload.status).json(payload);
     } catch (error) {
       console.log(error);

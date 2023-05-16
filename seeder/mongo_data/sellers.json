@@ -1,0 +1,224 @@
+[{
+  "_id": {
+    "$oid": "6427e06064221759762dcadc"
+  },
+  "userId": {
+    "$oid": "6427dff964221759762dcad0"
+  },
+  "info": {
+    "name": "Test Shop",
+    "phone": "0329460523",
+    "address": []
+  },
+  "logo": "agdasgdj",
+  "slogan": "Just do it!",
+  "type": "normal",
+  "proof": [],
+  "meta": {
+    "totalSold": 0,
+    "totalProduct": 0,
+    "totalEvaluation": 0,
+    "ranking": 0
+  },
+  "specs": [],
+  "isDisabled": false,
+  "createdAt": {
+    "$date": "2023-04-01T07:42:24.575Z"
+  },
+  "updatedAt": {
+    "$date": "2023-04-01T07:42:24.575Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6461b5f41a8f4bca357fbfad"
+  },
+  "userId": "6461aef71a8f4bca357fbf98",
+  "info": {
+    "name": "Aka Shop",
+    "phone": "570.388.1226",
+    "address": [
+      {
+        "location": "39722 Rebekah Square Suite 279"
+      }
+    ]
+  },
+  "logo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/42.jpg",
+  "slogan": "Monitored homogeneous policy",
+  "type": "normal",
+  "meta": {
+    "totalSold": 0,
+    "totalProduct": 0,
+    "totalEvaluation": 0,
+    "ranking": 0
+  },
+  "isDisabled": false
+},{
+  "_id": {
+    "$oid": "6461b5f41a8f4bca357fbfae"
+  },
+  "userId": "6461aef71a8f4bca357fbf99",
+  "info": {
+    "name": "Great Book Shop",
+    "phone": "1-519-763-9127 x29058",
+    "address": [
+      {
+        "location": "415 Little Overpass Suite 226"
+      }
+    ]
+  },
+  "logo": "https://avatars.githubusercontent.com/u/58430955",
+  "slogan": "Quality-focused client-server projection",
+  "type": "normal",
+  "meta": {
+    "totalSold": 0,
+    "totalProduct": 0,
+    "totalEvaluation": 0,
+    "ranking": 0
+  },
+  "isDisabled": false
+},{
+  "_id": {
+    "$oid": "6461b5f41a8f4bca357fbfaf"
+  },
+  "userId": "6461aef71a8f4bca357fbf9a",
+  "info": {
+    "name": "Happy Shop",
+    "phone": "317.995.4350 x1385",
+    "address": [
+      {
+        "location": "49204 Considine Creek Apt. 988"
+      }
+    ]
+  },
+  "logo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/521.jpg",
+  "slogan": "Seamless directional extranet",
+  "type": "normal",
+  "meta": {
+    "totalSold": 0,
+    "totalProduct": 0,
+    "totalEvaluation": 0,
+    "ranking": 0
+  },
+  "isDisabled": false
+},{
+  "_id": {
+    "$oid": "6461b5f41a8f4bca357fbfb0"
+  },
+  "userId": "6461aef71a8f4bca357fbf9b",
+  "info": {
+    "name": "I Love Book",
+    "phone": "857.633.0044 x624",
+    "address": [
+      {
+        "location": "569 Kulas Station Apt. 441"
+      }
+    ]
+  },
+  "logo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/312.jpg",
+  "slogan": "Reduced modular Graphical User Interface",
+  "type": "normal",
+  "meta": {
+    "totalSold": 0,
+    "totalProduct": 0,
+    "totalEvaluation": 0,
+    "ranking": 0
+  },
+  "isDisabled": false
+},{
+  "_id": {
+    "$oid": "6461b5f41a8f4bca357fbfb1"
+  },
+  "userId": "6461aef71a8f4bca357fbf9c",
+  "info": {
+    "name": "NiNa Shop",
+    "phone": "252.343.6572 x5302",
+    "address": [
+      {
+        "location": "751 Marcella Pine Apt. 764"
+      }
+    ]
+  },
+  "logo": "https://avatars.githubusercontent.com/u/69502027",
+  "slogan": "Stand-alone radical paradigm",
+  "type": "normal",
+  "meta": {
+    "totalSold": 0,
+    "totalProduct": 0,
+    "totalEvaluation": 0,
+    "ranking": 0
+  },
+  "isDisabled": false
+},{
+  "_id": {
+    "$oid": "6461b5f41a8f4bca357fbfb2"
+  },
+  "userId": "6461aef71a8f4bca357fbf9d",
+  "info": {
+    "name": "Tommy Shop",
+    "phone": "399.540.0853 x28389",
+    "address": [
+      {
+        "location": "62334 DuBuque Roads Suite 855"
+      }
+    ]
+  },
+  "logo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/330.jpg",
+  "slogan": "Object-based value-added productivity",
+  "type": "normal",
+  "meta": {
+    "totalSold": 0,
+    "totalProduct": 0,
+    "totalEvaluation": 0,
+    "ranking": 0
+  },
+  "isDisabled": false
+},{
+  "_id": {
+    "$oid": "6461b5f41a8f4bca357fbfb3"
+  },
+  "userId": "6461aef71a8f4bca357fbf9e",
+  "info": {
+    "name": "Book Land",
+    "phone": "(334) 254-8198 x95979",
+    "address": [
+      {
+        "location": "9807 Ola Field Apt. 547"
+      }
+    ]
+  },
+  "logo": "https://avatars.githubusercontent.com/u/10788956",
+  "slogan": "Organized global hub",
+  "type": "normal",
+  "meta": {
+    "totalSold": 0,
+    "totalProduct": 0,
+    "totalEvaluation": 0,
+    "ranking": 0
+  },
+  "isDisabled": false
+},{
+  "_id": {
+    "$oid": "6461b5f41a8f4bca357fbfb4"
+  },
+  "userId": "6461aef71a8f4bca357fbf9f",
+  "info": {
+    "name": "Knowledged",
+    "phone": "(603) 789-7019 x484",
+    "address": [
+      {
+        "location": "80175 McGlynn Pass Apt. 301"
+      }
+    ]
+  },
+  "logo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/431.jpg",
+  "slogan": "Cross-platform system-worthy emulation",
+  "type": "normal",
+  "meta": {
+    "totalSold": 0,
+    "totalProduct": 0,
+    "totalEvaluation": 0,
+    "ranking": 0
+  },
+  "isDisabled": false
+}]

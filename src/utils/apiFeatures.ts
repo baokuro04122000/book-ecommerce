@@ -39,10 +39,7 @@ class APIFeatures {
       : {};
 
     this.query = this.query.find({
-      ...sellerId,
-      ...categoryId,
-      ...name,
-      ...author,
+      $or: [sellerId, categoryId, name, author],
     });
     return this;
   }
@@ -110,6 +107,7 @@ class APIFeatures {
       'categoryId',
       'name',
       'categoryName',
+      'author',
     ];
     removeFields.forEach((el) => delete queryCopy[el]);
 
@@ -120,11 +118,31 @@ class APIFeatures {
     const sort = new Map([
       ['desc', this.query.find(JSON.parse(queryStr)).sort({ createdAt: -1 })],
       ['asec', this.query.find(JSON.parse(queryStr)).sort({ createdAt: 1 })],
+      [
+        'price',
+        this.query
+          .find({
+            variants: {
+              $elemMatch: { type: 'paperBack', ...JSON.parse(queryStr) },
+            },
+          })
+          .sort({
+            'variants.price': 1,
+          }),
+      ],
     ]);
 
-    this.query = sort.get(this.queryStr.order)
-      ? sort.get(this.queryStr.order)
-      : this.query.find(JSON.parse(queryStr)).sort({ createdAt: 1 });
+    if (this.queryStr.order) {
+      this.query = sort.get(this.queryStr.order)
+        ? sort.get(this.queryStr.order)
+        : this.query.find({}).sort({ createdAt: 1 });
+    }
+
+    if (this.query.price) {
+      this.query = sort.get('price')
+        ? sort.get(this.queryStr.order)
+        : this.query.find({}).sort({ createdAt: 1 });
+    }
 
     return this;
   }

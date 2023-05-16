@@ -20,6 +20,7 @@ import {
   ResetPasswordDto,
   GoogleLoginDto,
   LogoutDto,
+  SignUpUserDto,
 } from '../dto/auth.dto';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -34,7 +35,6 @@ export class AuthController {
         ...user,
         email: filter.escape(user.email),
         name: filter.escape(user.name),
-        nickName: filter.escape(user.nickName),
         gender: filter.escape(user.gender),
       });
       return res.status(payload.status).json(payload);

@@ -1,4 +1,4 @@
-@HOST=http://localhost:9000/api/v1/admin
+@HOST=http://localhost:8000/api/v1/admin
 
 POST {{HOST}}/user/logout
 Content-Type: application/json
@@ -13,3 +13,12 @@ GET {{HOST}}/user/all
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI3ZGYxODMxNDc3MjhkMGVlYTU0NjQiLCJyb2xlIjoiYWRtaW4iLCJ0aW1lQ3JlYXRlZCI6MTY4MDQyMTAyNzI5NSwiaWF0IjoxNjgwNDIxMDI3LCJleHAiOjE2ODA0MjQ2Mjd9.VwO4brOG5poIHSClEyQGx_0ls4_5ekOLrShIHg94Hmc
 
 {}
+
+### set featured product
+PATCH {{HOST}}/product/featured
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI3ZGYxODMxNDc3MjhkMGVlYTU0NjQiLCJyb2xlIjoiYWRtaW4iLCJ0aW1lQ3JlYXRlZCI6MTY4MzM5OTEwODg5NCwiaWF0IjoxNjgzMzk5MTA5LCJleHAiOjE2ODM0MDI3MDl9.AATQjQffrXMomfhpG6kEDR6lxBG22Fv0StWOYL29aQQ
+
+{
+  "productId":"6456a1173d40716d5ffcdbfd"
+}

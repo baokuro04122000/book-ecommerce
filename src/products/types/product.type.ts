@@ -4,7 +4,7 @@ export interface ProductDetails {
   category: any;
   slug: string;
   description: string;
-  variant: Array<{
+  variants: Array<{
     type: string;
     maxOrder: number;
     price: number;

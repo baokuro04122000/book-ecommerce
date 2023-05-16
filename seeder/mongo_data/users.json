@@ -1,0 +1,297 @@
+[{
+  "_id": {
+    "$oid": "6427df183147728d0eea5464"
+  },
+  "contact": {
+    "phone": null
+  },
+  "local": {
+    "email": "admin@gmail.admin.com",
+    "password": "$2a$10$YoPsGrlL53udYHUh3Z1Ihudi2TmekHqsAONgkYeX3Q.N/G2gR5q4.",
+    "verified": true
+  },
+  "info": {
+    "name": "admin",
+    "gender": "male",
+    "nickName": "",
+    "language": "en"
+  },
+  "status": "normal",
+  "role": "admin",
+  "meta": {
+    "totalBuy": 0,
+    "totalCancel": 0
+  },
+  "specs": [
+    {
+      "k": "featured",
+      "v": "6456a1173d40716d5ffcdbfd"
+    }
+  ],
+  "createdAt": {
+    "$date": "2023-04-01T07:36:56.346Z"
+  },
+  "updatedAt": {
+    "$date": "2023-05-06T18:52:10.391Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6427dff964221759762dcad0"
+  },
+  "contact": {
+    "phone": null
+  },
+  "local": {
+    "email": "baotrandinh.ute@gmail.com",
+    "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+    "verified": true
+  },
+  "info": {
+    "name": "bao tran",
+    "gender": "male",
+    "nickName": "",
+    "language": "en"
+  },
+  "status": "normal",
+  "role": "seller",
+  "meta": {
+    "totalBuy": 0,
+    "totalCancel": 0
+  },
+  "specs": [],
+  "createdAt": {
+    "$date": "2023-04-01T07:40:41.726Z"
+  },
+  "updatedAt": {
+    "$date": "2023-04-01T07:42:24.608Z"
+  },
+  "__v": 0,
+  "seller": {
+    "$oid": "6427e06064221759762dcadc"
+  }
+},{
+  "_id": {
+    "$oid": "643754026d966ee7760b91c6"
+  },
+  "contact": {
+    "phone": null
+  },
+  "local": {
+    "email": "baotrandinh100@gmail.com",
+    "password": "$2a$10$J/KthbXA6w2mzOOx92lD2uNrXZ8zTd8zGvZ/H4xzuuOcMUe8wH5g2",
+    "verified": true
+  },
+  "info": {
+    "name": "bao tran test",
+    "gender": "male",
+    "nickName": "",
+    "language": "en"
+  },
+  "status": "blocked",
+  "role": "user",
+  "meta": {
+    "totalBuy": 0,
+    "totalCancel": 0
+  },
+  "specs": [],
+  "createdAt": {
+    "$date": "2023-04-13T00:59:46.769Z"
+  },
+  "updatedAt": {
+    "$date": "2023-04-13T04:00:30.393Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "646090a92df7a7da8e2e95ea"
+  },
+  "contact": {
+    "phone": null
+  },
+  "local": {
+    "email": "test01@yopmail.com",
+    "password": "$2a$10$V3o0FuLxPDQEjnczH87uQOMmV5oTPZeO809RZO.UxRDtcKBh0Wxia",
+    "verified": true
+  },
+  "info": {
+    "name": "Hello",
+    "gender": "male",
+    "nickName": "",
+    "language": "en"
+  },
+  "status": "normal",
+  "role": "user",
+  "meta": {
+    "totalBuy": 0,
+    "totalCancel": 0
+  },
+  "specs": [],
+  "createdAt": {
+    "$date": "2023-05-14T07:41:29.641Z"
+  },
+  "updatedAt": {
+    "$date": "2023-05-14T07:41:46.078Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6461aef71a8f4bca357fbf98"
+  },
+  "local": {
+    "email": "user01@gmail.com",
+    "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+    "verified": true
+  },
+  "info": {
+    "name": "Janis Schaefer",
+    "gender": "female",
+    "birthDay": "1980-10-27T17:56:08.130Z",
+    "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/671.jpg"
+  },
+  "status": "normal",
+  "role": "seller",
+  "seller": {
+    "$oid": "6461b5f41a8f4bca357fbfad"
+  }
+},{
+  "_id": {
+    "$oid": "6461aef71a8f4bca357fbf99"
+  },
+  "local": {
+    "email": "user02@gmail.com",
+    "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+    "verified": true
+  },
+  "info": {
+    "name": "Dr. Ada Reynolds",
+    "gender": "female",
+    "birthDay": "1945-11-11T14:01:28.132Z",
+    "avatar": "https://avatars.githubusercontent.com/u/77857123"
+  },
+  "status": "normal",
+  "role": "seller",
+  "seller": {
+    "$oid": "6461b5f41a8f4bca357fbfae"
+  }
+},{
+  "_id": {
+    "$oid": "6461aef71a8f4bca357fbf9a"
+  },
+  "local": {
+    "email": "user03@gmail.com",
+    "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+    "verified": true
+  },
+  "info": {
+    "name": "Betsy Turcotte",
+    "gender": "male",
+    "birthDay": "1971-03-29T04:52:56.712Z",
+    "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/502.jpg"
+  },
+  "status": "normal",
+  "role": "seller",
+  "seller": {
+    "$oid": "6461b5f41a8f4bca357fbfaf"
+  }
+},{
+  "_id": {
+    "$oid": "6461aef71a8f4bca357fbf9b"
+  },
+  "local": {
+    "email": "user04@gmail.com",
+    "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+    "verified": true
+  },
+  "info": {
+    "name": "Connie Klocko",
+    "gender": "male",
+    "birthDay": "1955-05-10T18:00:00.916Z",
+    "avatar": "https://avatars.githubusercontent.com/u/21276769"
+  },
+  "status": "normal",
+  "role": "seller",
+  "seller": {
+    "$oid": "6461b5f41a8f4bca357fbfb0"
+  }
+},{
+  "_id": {
+    "$oid": "6461aef71a8f4bca357fbf9c"
+  },
+  "local": {
+    "email": "user05@gmail.com",
+    "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+    "verified": true
+  },
+  "info": {
+    "name": "Emma DuBuque",
+    "gender": "female",
+    "birthDay": "1965-08-30T04:13:20.267Z",
+    "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/149.jpg"
+  },
+  "status": "normal",
+  "role": "seller",
+  "seller": {
+    "$oid": "6461b5f41a8f4bca357fbfb1"
+  }
+},{
+  "_id": {
+    "$oid": "6461aef71a8f4bca357fbf9d"
+  },
+  "local": {
+    "email": "user06@gmail.com",
+    "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+    "verified": true
+  },
+  "info": {
+    "name": "Kristopher Gulgowski",
+    "gender": "male",
+    "birthDay": "1993-12-07T17:16:25.439Z",
+    "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/750.jpg"
+  },
+  "status": "normal",
+  "role": "seller",
+  "seller": {
+    "$oid": "6461b5f41a8f4bca357fbfb2"
+  }
+},{
+  "_id": {
+    "$oid": "6461aef71a8f4bca357fbf9e"
+  },
+  "local": {
+    "email": "user07@gmail.com",
+    "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+    "verified": true
+  },
+  "info": {
+    "name": "Kyle Emmerich III",
+    "gender": "male",
+    "birthDay": "1966-07-16T00:56:40.927Z",
+    "avatar": "https://avatars.githubusercontent.com/u/50558459"
+  },
+  "status": "normal",
+  "role": "seller",
+  "seller": {
+    "$oid": "6461b5f41a8f4bca357fbfb3"
+  }
+},{
+  "_id": {
+    "$oid": "6461aef71a8f4bca357fbf9f"
+  },
+  "local": {
+    "email": "user08@gmail.com",
+    "password": "$2a$10$U9.fs2S9r2JFshBUULmzAeHneA41SnDEXdvUHxkIvSzGyYNoI7Zk.",
+    "verified": true
+  },
+  "info": {
+    "name": "Leigh Howell",
+    "gender": "female",
+    "birthDay": "1986-05-06T19:38:12.937Z",
+    "avatar": "https://avatars.githubusercontent.com/u/72590870"
+  },
+  "status": "normal",
+  "role": "seller",
+  "seller": {
+    "$oid": "6461b5f41a8f4bca357fbfb4"
+  }
+}]

@@ -5,3 +5,9 @@ export class UserLogoutDto {
   @IsString()
   userId: string;
 }
+
+export class SetFeaturedProductDto {
+  @IsNotEmpty()
+  @IsString()
+  productId: string;
+}

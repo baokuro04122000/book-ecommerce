@@ -10,7 +10,6 @@ import { Product, PRODUCT_MODEL } from '../model/product.model';
 import Message from '../../lang/en.lang';
 import { errorResponse } from 'src/utils/helpers.utils';
 import { CreateCategoryDto } from '../dto/category.dto';
-
 @Injectable()
 export class CategoryService {
   private logger = new Logger('Category service');
@@ -122,6 +121,141 @@ export class CategoryService {
         return resolve({
           status: HttpStatus.OK,
           data: categories,
+        });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  getAllCategoriesWithAmountProducts(): Promise<INotifyResponse<any>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const categories = await this.categoryModel
+          .find({})
+          .sort({ createdAt: -1 })
+          .lean();
+        if (!categories) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.BAD_REQUEST,
+              message: Message.category_empty,
+            }),
+          );
+        }
+        const amountProducts = await Promise.all(
+          categories.map((category) =>
+            this.productModel.countDocuments({
+              category: category._id,
+            }),
+          ),
+        );
+
+        const payload = categories.map((category, index) => ({
+          ...category,
+          products: amountProducts[index],
+        }));
+
+        return resolve({
+          status: HttpStatus.OK,
+          data: payload,
+        });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  getSellers(): Promise<INotifyResponse<any>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const sellers = await this.sellerModel
+          .find({})
+          .sort({ 'meta.totalSold': -1 })
+          .skip(0)
+          .limit(18)
+          .lean();
+        if (!sellers) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.BAD_REQUEST,
+              message: Message.category_empty,
+            }),
+          );
+        }
+        const totalProduct = await Promise.all(
+          sellers.map((seller) =>
+            this.productModel.countDocuments({
+              sellerId: seller._id,
+            }),
+          ),
+        );
+
+        const payload = sellers.map((seller, index) => ({
+          ...seller,
+          totalProduct: totalProduct[index],
+        }));
+
+        return resolve({
+          status: HttpStatus.OK,
+          data: payload,
+        });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  getSellersTop3(): Promise<INotifyResponse<any>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const sellers = await this.sellerModel.find({}).lean();
+        if (!sellers) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.BAD_REQUEST,
+              message: Message.category_empty,
+            }),
+          );
+        }
+        const totalProduct = await Promise.all(
+          sellers.map((seller) =>
+            this.productModel.countDocuments({
+              sellerId: seller._id,
+            }),
+          ),
+        );
+
+        const payload = sellers.map((seller, index) => ({
+          ...seller,
+          totalProduct: totalProduct[index],
+        }));
+
+        const sorted = payload.sort((a, b) => {
+          return b.totalProduct - a.totalProduct;
+        });
+
+        return resolve({
+          status: HttpStatus.OK,
+          data: [sorted[0], sorted[1], sorted[2]],
         });
       } catch (error) {
         this.logger.error(error);

@@ -6,7 +6,12 @@ import { JwtService } from '@nestjs/jwt';
 import { Redis } from 'ioredis';
 import axios from 'axios';
 import { CreateUserDto, UserLoginDto, CreateSellerDto } from '../dto/user.dto';
-import { TokenDto, ResetPasswordDto, LogoutDto } from '../dto/auth.dto';
+import {
+  TokenDto,
+  ResetPasswordDto,
+  LogoutDto,
+  SignUpUserDto,
+} from '../dto/auth.dto';
 import { User, USER_MODEL } from '../model/user.model';
 import { Token, TOKEN_MODEL } from '../model/token.model';
 import { Seller, SELLER_MODEL } from '../model/seller.model';
@@ -301,7 +306,6 @@ export class AuthService {
 
         const payload = {
           userId: account._id,
-          nickName: account.info.nickName,
           name: account.info.name,
           avatar: account.info.avatar,
           gender: account.info.gender,
@@ -989,7 +993,6 @@ export class AuthService {
           .lean();
         const payload = {
           userId: account._id,
-          nickName: account.info.nickName,
           name: account.info.name,
           avatar: account.info.avatar,
           role: account.role,

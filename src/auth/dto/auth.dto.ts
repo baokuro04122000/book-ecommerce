@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsString, Matches } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Matches,
+} from 'class-validator';
 import Message from '../../lang/en.lang';
 export class TokenDto {
   @IsNotEmpty()
@@ -38,4 +44,25 @@ export class LogoutDto {
   @IsNotEmpty()
   @IsString()
   refreshToken: string;
+}
+
+export class SignUpUserDto {
+  @IsNotEmpty()
+  @IsString()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsOptional()
+  avatar: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Matches(/^(?=.*[a-z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}$/, {
+    message: Message.password_invalid,
+  })
+  password: string;
 }
