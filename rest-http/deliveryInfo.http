@@ -1,0 +1,71 @@
+@HOST=http://localhost:8000/api/v1
+@Token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDYwOTBhOTJkZjdhN2RhOGUyZTk1ZWEiLCJyb2xlIjoidXNlciIsInRpbWVDcmVhdGVkIjoxNjg0NDM4ODg4NzEwLCJpYXQiOjE2ODQ0Mzg4ODgsImV4cCI6MTY4NDQ0MjQ4OH0.LnVU3Uitm7bmELCMT10KFgcxATBnVLbejmFHgnKOByU
+### login
+POST {{HOST}}/auth/login
+Content-Type: application/json
+
+{
+  "email":"test01@yopmail.com",
+  "password":"hello123@"
+}
+
+### add delivery info
+POST {{HOST}}/address/add
+Content-Type: application/json
+Authorization: Bearer {{Token}}
+
+{
+  "address":{
+    "name":"Baby pig",
+    "zipCode": 63000,
+    "phoneNumber":"05003539186",
+    "address":"123/1 Hoang dieu 2, Tp. Thu Duc",
+    "addressCode":{
+      "district":1,
+      "province":3,
+      "ward": 2,
+      "street":222
+    },
+    "code":1
+  }
+}
+
+### get delivery info
+GET {{HOST}}/address/get
+Authorization: Bearer {{Token}}
+
+{
+
+}
+
+### remove delivery info by address Id
+DELETE {{HOST}}/address/6465f8a77b938c318d62bccd/delete
+Content-Type: application/json
+Authorization: Bearer {{Token}}
+
+{
+}
+
+
+### update delivery info
+PUT {{HOST}}/address/addressId/update
+Content-Type: application/json
+Authorization: Bearer {{Token}}
+
+{
+  "address":{
+    "name":"Hello pig",
+    "zipCode": 63000,
+    "phoneNumber":"05003539181",
+    "address":"123/1 Hoang dieu 2, Tp. Thu Duc"
+  }
+}
+
+### set default delivery info
+PATCH {{HOST}}/address/addressId/set-default
+Content-Type: application/json
+Authorization: Bearer {{Token}}
+
+{
+
+}

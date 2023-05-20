@@ -1055,28 +1055,51 @@ export class AuthService {
     });
   }
 
-  logout({
-    accessToken,
-    refreshToken,
-  }: LogoutDto): Promise<INotifyResponse<null>> {
+  logoutUser(userId: string): Promise<INotifyResponse<null>> {
     return new Promise(async (resolve, reject) => {
       try {
-        const clearTokenRedis = await this.redisClient.del(
-          accessToken,
-          refreshToken,
+        const accessTokenList = await this.redisClient.keys(
+          `userId-accessToken-${userId}-*`,
         );
-        console.log(clearTokenRedis);
-        return resolve({
-          status: HttpStatus.OK,
-          message: 'OK',
-          data: null,
-        });
+
+        const refreshTokenList = await this.redisClient.keys(
+          `userId-refreshToken-${userId}-*`,
+        );
+
+        if (!accessTokenList.length && !refreshTokenList.length) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.NOT_FOUND,
+              message: Message.user_not_login,
+            }),
+          );
+        }
+
+        const delList = [...accessTokenList, ...refreshTokenList];
+
+        if (refreshTokenList)
+          Promise.all(
+            delList.map((key) => {
+              return this.redisClient.del(key);
+            }),
+          )
+            .then((result) => {
+              this.logger.log('success::', ...result);
+              return resolve({
+                status: HttpStatus.OK,
+                message: 'Logout successfully',
+                data: null,
+              });
+            })
+            .catch((err) => {
+              this.logger.error(err);
+            });
       } catch (error) {
         this.logger.error(error);
         return reject(
           errorResponse({
-            status: HttpStatus.BAD_REQUEST,
-            message: Message.token_invalid,
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
           }),
         );
       }

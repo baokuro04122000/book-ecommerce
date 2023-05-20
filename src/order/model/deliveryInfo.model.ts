@@ -80,5 +80,5 @@ export interface Address extends Document {
 
 export interface DeliveryInfo extends Document {
   user: User;
-  address: Address;
+  address: any;
 }

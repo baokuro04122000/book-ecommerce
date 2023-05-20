@@ -135,13 +135,13 @@ class APIFeatures {
     if (this.queryStr.order) {
       this.query = sort.get(this.queryStr.order)
         ? sort.get(this.queryStr.order)
-        : this.query.find({}).sort({ createdAt: 1 });
+        : this.query.find({}).sort({ createdAt: -1 });
     }
 
     if (this.query.price) {
       this.query = sort.get('price')
-        ? sort.get(this.queryStr.order)
-        : this.query.find({}).sort({ createdAt: 1 });
+        ? sort.get('price')
+        : this.query.find({}).sort({ createdAt: -1 });
     }
 
     return this;

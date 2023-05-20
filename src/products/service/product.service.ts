@@ -150,6 +150,7 @@ export class ProductService {
         return resolve({
           status: HttpStatus.OK,
           data: {
+            ...product,
             productPictures: product.productPictures,
             name: product.name,
             seller: product.sellerId,

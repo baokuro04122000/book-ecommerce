@@ -153,6 +153,7 @@ export class AuthController {
   async relogin(@Body() body: TokenDto, @Req() req, @Res() res) {
     try {
       const { token } = body;
+      console.log('token', token);
       const payload = await this.usersService.refreshToken(token);
       return res.status(payload.status).json(payload);
     } catch (error) {
@@ -173,10 +174,13 @@ export class AuthController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post('/logout')
-  async logout(@Body() body: LogoutDto, @Res() res) {
+  async logout(@Req() req, @Res() res) {
     try {
-      const payload = await this.usersService.logout(body);
+      const payload = await this.usersService.logoutUser(
+        req.user.userId as string,
+      );
       return res.status(payload.status).json(payload);
     } catch (error) {
       return res.status(error.status).json(error);

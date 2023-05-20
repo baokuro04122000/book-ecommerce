@@ -1,0 +1,49 @@
+@HOST=http://localhost:8000/api/v1
+
+@Token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDYwOTBhOTJkZjdhN2RhOGUyZTk1ZWEiLCJyb2xlIjoidXNlciIsInRpbWVDcmVhdGVkIjoxNjg0NjA2ODI4NzcwLCJpYXQiOjE2ODQ2MDY4MjgsImV4cCI6MTY4NDYxMDQyOH0.xQyQozHTdx_AOxH7e5OZ7Wqst3-7x_zqDhs3TPUYMNI
+
+### login
+POST {{HOST}}/auth/login
+Content-Type: application/json
+
+{
+  "email":"test01@yopmail.com",
+  "password":"hello123@"
+}
+
+## seller login
+##user02@gmail.com
+
+### add order
+//note: shipping code set to default :(((
+POST {{HOST}}/order/add
+Content-Type: application/json
+Authorization: Bearer {{Token}}
+
+{
+  "order":{
+    "addressId":"64667f7b905d463cda72008b",
+    "paymentType": "cod",
+    "items":[
+      {
+        "productId":"6461db631a8f4bca357fc087",
+        "quantity":5,
+        "variant": "6463987828c09d6e9471f0b3",
+        "shippingCode": 1
+    },
+      {
+        "productId":"6456a1173d40716d5ffcdbfd",
+        "quantity":5,
+        "variant":"6456a1173d40716d5ffcdbfe",
+        "shippingCode":1
+      }
+    ]
+
+  }
+}
+
+### get order not done by seller
+GET {{HOST}}/order/seller/not-done?page=1&limit=8
+Authorization: Bearer {{Token}}
+
+###

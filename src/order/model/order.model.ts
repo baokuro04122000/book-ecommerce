@@ -3,6 +3,7 @@ import { Seller } from 'src/auth/model/seller.model';
 import { Product } from 'src/products/model/product.model';
 import { Variant } from 'src/products/model/variant.model';
 
+export const ORDER_MODEL = 'order-model';
 const OrderSchema = new mongoose.Schema(
   {
     user: {
@@ -67,6 +68,14 @@ const OrderSchema = new mongoose.Schema(
           type: Boolean,
           default: false,
         },
+        reason: {
+          type: String,
+          default: null,
+        },
+        personCancel: {
+          type: String,
+          default: null,
+        },
         isDeleted: {
           type: Boolean,
           default: false,
@@ -75,11 +84,16 @@ const OrderSchema = new mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
           ref: 'sellers',
         },
+        paymentStatus: {
+          type: String,
+          enum: ['pending', 'completed', 'cancelled', 'refund'],
+          required: true,
+        },
         orderStatus: [
           {
             type: {
               type: String,
-              enum: ['ordered', 'packed', 'shipped', 'delivered'],
+              enum: ['ordered', 'packed', 'shipped', 'delivered', 'cancelled'],
               default: 'ordered',
             },
             date: {
@@ -96,11 +110,6 @@ const OrderSchema = new mongoose.Schema(
         updatedAt: { type: Date, default: Date.now() },
       },
     ],
-    paymentStatus: {
-      type: String,
-      enum: ['pending', 'completed', 'cancelled', 'refund'],
-      required: true,
-    },
     paymentType: {
       type: String,
       enum: ['cod', 'paypal'],
@@ -110,25 +119,8 @@ const OrderSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    orderStatus: [
-      {
-        type: {
-          type: String,
-          enum: ['ordered', 'packed', 'shipped', 'delivered'],
-          default: 'ordered',
-        },
-        date: {
-          type: Date,
-          default: Date.now(),
-        },
-        isCompleted: {
-          type: Boolean,
-          default: false,
-        },
-      },
-    ],
   },
-  { collection: 'orders', timestamps: true },
+  { timestamps: true },
 );
 
 export { OrderSchema };
@@ -154,8 +146,10 @@ export interface Order extends Document {
     orderStatus: any;
     createdAt: Date;
     updatedAt: Date;
+    paymentStatus: string;
+    personCancel: string;
+    reason: string;
   }>;
-  paymentStatus: string;
   paymentType: string;
   shippingCost: number;
   orderStatus: any;

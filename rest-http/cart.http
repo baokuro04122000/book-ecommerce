@@ -1,0 +1,32 @@
+@HOST=http://localhost:8000/api/v1
+
+@Token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDYwOTBhOTJkZjdhN2RhOGUyZTk1ZWEiLCJyb2xlIjoidXNlciIsInRpbWVDcmVhdGVkIjoxNjg0NDA2NTU0MjM3LCJpYXQiOjE2ODQ0MDY1NTQsImV4cCI6MTY4NDQxMDE1NH0.MuoNhe_ui1HfaXjJ6FQQG46KahrSADJ390hIj3FVkuQ
+
+### login
+POST {{HOST}}/auth/login
+Content-Type: application/json
+
+{
+  "email":"test01@yopmail.com",
+  "password":"hello123@"
+}
+
+### add to cart
+POST {{HOST}}/cart/add
+Content-Type: application/json
+Authorization: Bearer {{Token}}
+
+{
+  "product":"6461db631a8f4bca357fc087",
+  "variant":"6463987828c09d6e9471f0b3",
+  "quantity":5,
+  "wishlist":false
+}
+
+### get carts
+GET {{HOST}}/cart/get
+Content-Type: application/json
+Authorization: Bearer {{Token}}
+
+{}
+

@@ -27,6 +27,7 @@ Content-Type: application/json
   "password":"hello123@"
 }
 
+
 ### request register seller
 GET {{HOST}}/seller/register
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI3ZGZmOTY0MjIxNzU5NzYyZGNhZDAiLCJyb2xlIjoidXNlciIsInRpbWVDcmVhdGVkIjoxNjgwMzM0ODcwODgzLCJpYXQiOjE2ODAzMzQ4NzEsImV4cCI6MTY4MDMzODQ3MX0.2XoszoWonOIk_XYxx2gWQt0jBxLKJHv60HwGg9tHA9M

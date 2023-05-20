@@ -35,7 +35,7 @@ export class CartService {
       try {
         const productExists = await this.productModel
           .findOne({
-            _id: new mongoose.Types.ObjectId(cartItem.product),
+            _id: cartItem.product,
           })
           .lean();
 
@@ -52,34 +52,56 @@ export class CartService {
           })
           .lean();
 
-        const productAlready = this.cartModel.exists({
-          $and: [
-            { user: userId },
-            { cartItems: { $elemMatch: { product: cartItem.product } } },
-          ],
-        });
+        const productAlready = this.cartModel
+          .findOne({
+            $and: [
+              { user: userId },
+              { cartItems: { $elemMatch: { product: cartItem.product } } },
+            ],
+          })
+          .lean();
 
         const [cart, productAdded] = await Promise.all([
           cartExists,
           productAlready,
         ]);
 
+        console.log('test::', productAdded);
         if (cart) {
           let condition: any;
           let update: any;
           if (productAdded) {
-            condition = {
-              $and: [
-                { user: userId },
-                { cartItems: { $elemMatch: { product: cartItem.product } } },
-              ],
-            };
-            update = {
-              $set: {
-                'cartItems.$.quantity': cartItem.quantity,
-                'cartItems.$.wishlist': cartItem.wishlist,
-              },
-            };
+            if (
+              productAdded.cartItems.find((item) => {
+                if (
+                  item.product.toString() === cartItem.product &&
+                  item.variant.toString() === cartItem.variant
+                ) {
+                  return true;
+                }
+                return false;
+              })
+            ) {
+              condition = {
+                $and: [
+                  { user: userId },
+                  { cartItems: { $elemMatch: { product: cartItem.product } } },
+                ],
+              };
+              update = {
+                $set: {
+                  'cartItems.$.quantity': cartItem.quantity,
+                  'cartItems.$.wishlist': cartItem.wishlist,
+                },
+              };
+            } else {
+              condition = { user: userId };
+              update = {
+                $push: {
+                  cartItems: cartItem,
+                },
+              };
+            }
           } else {
             condition = { user: userId };
             update = {
@@ -191,7 +213,7 @@ export class CartService {
                   ...item.product,
                   seller: item.product.sellerId,
                   sellerId: item.product.sellerId._id,
-                  specs: this.specsResponse(item.product),
+                  specs: this.specsResponse(item.product.specs),
                   productPictures: item.product.productPictures[0],
                 },
               };
@@ -224,12 +246,46 @@ export class CartService {
             {
               $pull: {
                 cartItems: {
-                  product: cartItem.product,
+                  product: cartItem.productId,
+                  variant: cartItem.variantId,
                 },
               },
             },
             { new: true, upsert: true },
           )
+          .lean();
+        if (!cart) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.NOT_FOUND,
+              message: Message.internal_server_error,
+            }),
+          );
+        }
+        return resolve({
+          status: HttpStatus.OK,
+          message: Message.delete_success,
+          data: null,
+        });
+      } catch (error) {
+        this.logger.error(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  deleteCartByUser(userId: string): Promise<INotifyResponse<null>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const cart = await this.cartModel
+          .deleteOne({
+            user: userId,
+          })
           .lean();
         if (!cart) {
           return reject(

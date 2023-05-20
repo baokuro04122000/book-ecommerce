@@ -37,7 +37,7 @@ export interface Cart extends Document {
   user: any;
   cartItems: Array<{
     product: any;
-    variant: Variant;
+    variant: any;
     wishlist: boolean;
     quantity: number;
     modifiedOn: Date;

@@ -17,9 +17,30 @@ import {
   DELIVERY_INFO_MODEL,
   DeliveryInfoSchema,
 } from '../model/deliveryInfo.model';
+import { SHIPPING_MODEL, ShippingSchema } from '../model/shipping.model';
+import {
+  SHIPPING_COMPANY_MODEL,
+  ShippingCompanySchema,
+} from '../model/shippingCompany.model';
+import { INVENTORY_MODEL, InventorySchema } from '../model/inventory.model';
+import {
+  PAYMENT_HISTORY_MODEL,
+  PaymentHistorySchema,
+} from '../model/paymentHistory.model';
+import { CART_MODEL, CartSchema } from '../model/cart.model';
+import { ORDER_MODEL, OrderSchema } from '../model/order.model';
+import { redisModule } from 'src/module.config';
+import {
+  NOTIFICATION_MODEL,
+  NotificationSchema,
+} from '../model/notification.model';
+import {
+  PERMISSION_MODEL,
+  PermissionReviewSchema,
+} from '../model/pemission.model';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, redisModule],
   providers: [
     OrderService,
     {
@@ -49,6 +70,52 @@ import {
       provide: DELIVERY_INFO_MODEL,
       useFactory: (connect: Connection) =>
         connect.model('deliveryInfo', DeliveryInfoSchema),
+      inject: [DATABASE_CONNECTION],
+    },
+    {
+      provide: ORDER_MODEL,
+      useFactory: (connect: Connection) => connect.model('orders', OrderSchema),
+      inject: [DATABASE_CONNECTION],
+    },
+    {
+      provide: SHIPPING_MODEL,
+      useFactory: (connect: Connection) =>
+        connect.model('shipping', ShippingSchema),
+      inject: [DATABASE_CONNECTION],
+    },
+    {
+      provide: SHIPPING_COMPANY_MODEL,
+      useFactory: (connect: Connection) =>
+        connect.model('shippingCompany', ShippingCompanySchema),
+      inject: [DATABASE_CONNECTION],
+    },
+    {
+      provide: INVENTORY_MODEL,
+      useFactory: (connect: Connection) =>
+        connect.model('inventories', InventorySchema),
+      inject: [DATABASE_CONNECTION],
+    },
+    {
+      provide: CART_MODEL,
+      useFactory: (connect: Connection) => connect.model('carts', CartSchema),
+      inject: [DATABASE_CONNECTION],
+    },
+    {
+      provide: PAYMENT_HISTORY_MODEL,
+      useFactory: (connect: Connection) =>
+        connect.model('paymentHistories', PaymentHistorySchema),
+      inject: [DATABASE_CONNECTION],
+    },
+    {
+      provide: NOTIFICATION_MODEL,
+      useFactory: (connect: Connection) =>
+        connect.model('notifications', NotificationSchema),
+      inject: [DATABASE_CONNECTION],
+    },
+    {
+      provide: PERMISSION_MODEL,
+      useFactory: (connect: Connection) =>
+        connect.model('permissionReview', PermissionReviewSchema),
       inject: [DATABASE_CONNECTION],
     },
   ],
