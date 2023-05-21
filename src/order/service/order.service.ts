@@ -506,6 +506,24 @@ export class OrderService {
             },
           };
           const ordered = await new this.orderModel(orderPayload).save();
+          const removeProductFromCart = ordered.items.map((item) => {
+            return this.cartModel.updateOne(
+              {
+                user: userId,
+              },
+              {
+                $pull: {
+                  cartItems: {
+                    product: item.product,
+                    variant: item.variant,
+                  },
+                },
+              },
+              {
+                new: true,
+              },
+            );
+          });
           const updateQuantity = ordered?.items?.map((item) => {
             return this.productModel
               .findOneAndUpdate(
@@ -531,7 +549,10 @@ export class OrderService {
           });
 
           //update quantity of product
-          const updatedProduct = await Promise.all(updateQuantity);
+          const [updatedProduct, removeCart] = await Promise.all([
+            ...updateQuantity,
+            ...removeProductFromCart,
+          ]);
 
           const checkInventoryExisted = ordered.items.map((item) => {
             return this.inventoryModel.exists({
@@ -791,6 +812,7 @@ export class OrderService {
       const d = this.inventoryModel;
       const u = this.userModel;
       const r = this.redisClient;
+      const c = this.cartModel;
       // Obtains the transaction details from paypal
       paypal.payment.execute(
         paymentId,
@@ -845,6 +867,24 @@ export class OrderService {
                   },
                 },
               );
+              const removeProductFromCart = ordered.items.map((item) => {
+                return c.updateOne(
+                  {
+                    user: ordered.user,
+                  },
+                  {
+                    $pull: {
+                      cartItems: {
+                        product: item.product,
+                        variant: item.variant,
+                      },
+                    },
+                  },
+                  {
+                    new: true,
+                  },
+                );
+              });
               const updateQuantity = payment.items.map((item) => {
                 return y
                   .findOneAndUpdate(
@@ -870,7 +910,10 @@ export class OrderService {
               });
 
               //update quantity of product
-              const updatedProduct = await Promise.all(updateQuantity);
+              const [updatedProduct, removeCart] = await Promise.all([
+                ...updateQuantity,
+                ...removeProductFromCart,
+              ]);
 
               const checkInventoryExisted = ordered.items.map((item) => {
                 return d.exists({
@@ -1120,11 +1163,11 @@ export class OrderService {
               user: userId,
             })
             .select(
-              'totalAmount items.product items.orderStatus orderStatus paymentType subtotal shippingCost',
+              'totalAmount items paymentType subtotal shippingCost address',
             )
             .populate({
               path: 'items.product',
-              select: 'name productPictures',
+              select: 'name productPictures variants _id slug',
             })
             .sort({
               createdAt: -1,
@@ -1142,9 +1185,8 @@ export class OrderService {
             quantity: order.items.length,
             items: order.items.map((item) => ({
               ...item,
-              orderStatus: item.orderStatus.pop(),
+              orderStatus: item.orderStatus.at(-1),
             })),
-            orderStatus: order.orderStatus.pop(),
           };
         });
         const payload = {
@@ -1211,6 +1253,7 @@ export class OrderService {
                     slug: 1,
                     _id: 1,
                     sellerId: 1,
+                    variants: 1,
                   },
                 },
               ],
@@ -1339,6 +1382,7 @@ export class OrderService {
                     slug: 1,
                     _id: 1,
                     sellerId: 1,
+                    variants: 1,
                   },
                 },
               ],
@@ -1579,6 +1623,7 @@ export class OrderService {
   ): Promise<INotifyResponse<any>> {
     return new Promise(async (resolve, reject) => {
       try {
+        console.log('userId', userId);
         const ordered = await this.orderModel.aggregate([
           { $match: { user: new mongoose.Types.ObjectId(userId) } },
           {
@@ -1754,6 +1799,7 @@ export class OrderService {
                     slug: 1,
                     _id: 1,
                     sellerId: 1,
+                    variants: 1,
                   },
                 },
               ],
@@ -1809,7 +1855,6 @@ export class OrderService {
             }),
           );
         let payload = [];
-
         ordered.forEach((item) => {
           let reservations = [];
           item.items.forEach((order) => {
@@ -1828,11 +1873,36 @@ export class OrderService {
               ];
             }
           });
+
           payload = [...payload, ...reservations];
         });
+
+        const result = await Promise.all(
+          payload.map(async (item) => {
+            const shippingCompany = await this.shippingModel
+              .findOne({
+                code: item.shippingCode,
+              })
+              .select('company user')
+              .populate({
+                path: 'company',
+                select: 'name',
+              })
+              .populate({
+                path: 'user',
+                select: 'info contact',
+              })
+              .lean();
+
+            return {
+              ...item,
+              shippingCompany: shippingCompany,
+            };
+          }),
+        );
         return resolve({
           status: HttpStatus.OK,
-          data: getPaginatedItems(payload, page, limit),
+          data: getPaginatedItems(result, page, limit),
         });
       } catch (error) {
         console.log(error);

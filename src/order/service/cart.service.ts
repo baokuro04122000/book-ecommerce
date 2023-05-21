@@ -187,6 +187,7 @@ export class CartService {
             ],
             select: '-description -summary',
           })
+          .sort({ createdAt: -1 })
           .lean();
         if (!cart) {
           return reject(

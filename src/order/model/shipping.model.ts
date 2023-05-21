@@ -48,4 +48,5 @@ export interface Shipping extends Document {
   from: number;
   price: number;
   company: any;
+  name: any;
 }

@@ -250,4 +250,72 @@ export class OrderController {
       return res.status(error.status).json(error);
     }
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/order/all-packed')
+  async getAllOrdersPackedByUser(@Res() res, @Req() req) {
+    try {
+      const { page, limit } = req.query;
+      const payload = await this.orderService.getAllOrdersPackedByUser(
+        req.user.userId,
+        page,
+        limit,
+      );
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/order/all-ordered')
+  async getAllOrdersOderedByUser(@Res() res, @Req() req) {
+    try {
+      const { page, limit } = req.query;
+      const payload = await this.orderService.getAllOrderedByUser(
+        req.user.userId,
+        page,
+        limit,
+      );
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/order/all-cancelled')
+  async getAllOrdersCancelledByUser(@Res() res, @Req() req) {
+    try {
+      const { page, limit } = req.query;
+      const payload = await this.orderService.getAllOrdersCancelByUser(
+        req.user.userId,
+        page,
+        limit,
+      );
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/order/shipper/get-order')
+  async getAllOrdersByShipper(@Res() res, @Req() req) {
+    try {
+      const { page, limit } = req.query;
+      const payload = await this.orderService.getOrdersShipping(
+        req.user.userId,
+        page,
+        limit,
+      );
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
 }
