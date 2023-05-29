@@ -43,6 +43,21 @@ const ProductSchema = new Schema(
       type: Array,
       default: [],
     },
+    reviews: [
+      {
+        user: { type: Schema.Types.ObjectId, ref: 'users', required: true },
+        rating: { type: Number, required: true },
+        comment: { type: String, required: true },
+        createdAt: {
+          type: Date,
+          default: Date.now(),
+        },
+        updatedAt: {
+          type: Date,
+          default: Date.now(),
+        },
+      },
+    ],
   },
   {
     collection: 'products',
@@ -70,4 +85,5 @@ export interface Product extends Document {
     totalRating: number;
   };
   specs?: [any];
+  reviews: any;
 }

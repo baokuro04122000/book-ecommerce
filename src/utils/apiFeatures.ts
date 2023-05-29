@@ -11,13 +11,13 @@ class APIFeatures {
   search() {
     const sellerId = this.queryStr.sellerId
       ? {
-          sellerId: new mongoose.Types.ObjectId(this.queryStr.sellerId),
+          sellerId: this.queryStr.sellerId,
         }
       : {};
 
     const categoryId = this.queryStr.categoryId
       ? {
-          category: new mongoose.Types.ObjectId(this.queryStr.categoryId),
+          category: this.queryStr.categoryId,
         }
       : {};
 
@@ -98,7 +98,6 @@ class APIFeatures {
 
   filter() {
     const queryCopy = { ...this.queryStr };
-
     // Removing fields from the query
     const removeFields = [
       'limit',
@@ -108,6 +107,7 @@ class APIFeatures {
       'name',
       'categoryName',
       'author',
+      'order',
     ];
     removeFields.forEach((el) => delete queryCopy[el]);
 
@@ -116,8 +116,6 @@ class APIFeatures {
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`);
 
     const sort = new Map([
-      ['desc', this.query.find(JSON.parse(queryStr)).sort({ createdAt: -1 })],
-      ['asec', this.query.find(JSON.parse(queryStr)).sort({ createdAt: 1 })],
       [
         'price',
         this.query
@@ -132,16 +130,10 @@ class APIFeatures {
       ],
     ]);
 
-    if (this.queryStr.order) {
-      this.query = sort.get(this.queryStr.order)
-        ? sort.get(this.queryStr.order)
-        : this.query.find({}).sort({ createdAt: -1 });
-    }
-
     if (this.query.price) {
       this.query = sort.get('price')
         ? sort.get('price')
-        : this.query.find({}).sort({ createdAt: -1 });
+        : this.query.sort({ createdAt: -1 });
     }
 
     return this;

@@ -35,7 +35,7 @@ const UserSchema = new mongoose.Schema(
         enum: ['nam', 'nu', 'male', 'female', 'other'],
         default: 'male',
       },
-      birthDay: { type: String, min: 6, max: 8 },
+      birthDay: { type: String },
       language: { type: String, default: 'en' },
       avatar: { type: String },
     },
@@ -59,6 +59,10 @@ const UserSchema = new mongoose.Schema(
         default: 0,
       },
       totalCancel: {
+        type: Number,
+        default: 0,
+      },
+      totalOrderReject: {
         type: Number,
         default: 0,
       },

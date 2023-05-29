@@ -41,7 +41,7 @@ const makeProducts = products?.map((product) => {
       },
     ],
     slug: slugify(product.title) + '-' + generate(),
-    productPictures: [`/images/products/${product.imageLink.split('/')[1]}`],
+    productPictures: [`/images/products/${product?.imageLink?.split('/')[1]}`],
     specs: [
       { k: 'author', v: product.author },
       { k: 'printLength', v: product.pages },

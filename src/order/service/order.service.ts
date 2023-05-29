@@ -335,6 +335,7 @@ export class OrderService {
   addOrder(userId, order): Promise<INotifyResponse<any>> {
     return new Promise(async (resolve, reject) => {
       try {
+        console.log('order::', order);
         const address = await this.deliveryModel
           .findOne({
             user: userId,
@@ -506,6 +507,7 @@ export class OrderService {
             },
           };
           const ordered = await new this.orderModel(orderPayload).save();
+          console.log('order::', ordered);
           const removeProductFromCart = ordered.items.map((item) => {
             return this.cartModel.updateOne(
               {
@@ -514,8 +516,8 @@ export class OrderService {
               {
                 $pull: {
                   cartItems: {
-                    product: item.product,
-                    variant: item.variant,
+                    product: item?.product,
+                    variant: item?.variant,
                   },
                 },
               },
@@ -524,6 +526,11 @@ export class OrderService {
               },
             );
           });
+          Promise.all(removeProductFromCart)
+            .then((x) => console.log('x', x))
+            .catch((err) => {
+              console.log('err:::', err);
+            });
           const updateQuantity = ordered?.items?.map((item) => {
             return this.productModel
               .findOneAndUpdate(
@@ -531,13 +538,8 @@ export class OrderService {
                   _id: item.product,
                 },
                 {
-                  $set: {
-                    $inc: {
-                      $and: [
-                        { quantity: -Number(item.quantity) },
-                        { 'meta.totalOrder': 1 },
-                      ],
-                    },
+                  $inc: {
+                    quantity: -Number(item.quantity),
                   },
                 },
                 {
@@ -549,14 +551,12 @@ export class OrderService {
           });
 
           //update quantity of product
-          const [updatedProduct, removeCart] = await Promise.all([
-            ...updateQuantity,
-            ...removeProductFromCart,
-          ]);
+          const updatedProduct = await Promise.all([...updateQuantity]);
 
-          const checkInventoryExisted = ordered.items.map((item) => {
+          console.log('updated:::', updatedProduct);
+          const checkInventoryExisted = ordered?.items?.map((item) => {
             return this.inventoryModel.exists({
-              product: item.product,
+              product: item?.product,
             });
           });
 
@@ -588,9 +588,10 @@ export class OrderService {
                 .lean();
             }
 
+            const updatedProductType = updatedProduct as any;
             return new this.inventoryModel({
               product: ordered.items[index].product,
-              sellerId: updatedProduct[index].sellerId,
+              sellerId: updatedProductType[0].sellerId,
               reservations: [
                 {
                   order: ordered._id,
@@ -603,31 +604,18 @@ export class OrderService {
 
           const createdInventory = await Promise.all(createInventory);
 
-          this.userModel
-            .findOne({ _id: userId })
-            .lean()
-            .exec((err, user) => {
-              if (err)
-                return reject(
-                  errorResponse({
-                    status: HttpStatus.INTERNAL_SERVER_ERROR,
-                    message: Message.internal_server_error,
-                  }),
-                );
-              this.redisClient.publish(
-                'order_success',
-                JSON.stringify({
-                  email: user.local.email
-                    ? user.local.email
-                    : user.google.email,
-                  orderId: ordered._id,
-                  name: user.local.email ? user.info.name : user.google.name,
-                  totalPaid: ordered.totalAmount,
-                  totalShippingCost: ordered.shippingCost,
-                }),
-              );
-            });
+          const user = await this.userModel.findOne({ _id: userId }).lean();
 
+          this.redisClient.publish(
+            'order_success',
+            JSON.stringify({
+              email: user.local.email ? user.local.email : user.google.email,
+              orderId: ordered._id,
+              name: user.local.email ? user.info.name : user.google.name,
+              totalPaid: ordered.totalAmount,
+              totalShippingCost: ordered.shippingCost,
+            }),
+          );
           return resolve({
             status: HttpStatus.CREATED,
             data: {
@@ -948,10 +936,11 @@ export class OrderService {
                     )
                     .lean();
                 }
+                const updatedProductType = updatedProduct as any;
 
                 return new d({
                   product: ordered.items[index].product,
-                  sellerId: updatedProduct[index].sellerId,
+                  sellerId: updatedProductType.sellerId,
                   reservations: [
                     {
                       order: ordered._id,
@@ -1365,7 +1354,7 @@ export class OrderService {
               createdAt: 1,
             },
           },
-          { $sort: { createdAt: -1 } },
+          { $sort: { updatedAt: -1 } },
           { $match: { 'items.0': { $exists: true } } },
           { $unwind: '$items' },
           {
@@ -1960,6 +1949,8 @@ export class OrderService {
                     productPictures: 1,
                     quantity: 1,
                     sellerId: 1,
+                    variants: 1,
+                    slug: 1,
                   },
                 },
               ],
@@ -2156,9 +2147,52 @@ export class OrderService {
           return;
         });
 
+        const x = _.uniqBy(payload, (obj) => {
+          return obj.product.name;
+        });
+        const makeData: any = [];
+        x.forEach((ele) => {
+          if (ele.items.length > 1) {
+            if (
+              ele.items[0].orderStatus.at(-1).type === 'delivered' &&
+              ele.items[0].orderStatus.at(-1).isCompleted === true
+            ) {
+              console.log('skip');
+            } else {
+              makeData.push({
+                ...ele,
+                items: [ele.items[0]],
+              });
+            }
+
+            if (
+              ele.items[1].orderStatus.at(-1).type === 'delivered' &&
+              ele.items[1].orderStatus.at(-1).isCompleted === true
+            ) {
+              console.log('skip');
+            } else {
+              makeData.push({
+                ...ele,
+                items: [ele.items[1]],
+              });
+            }
+          } else {
+            if (
+              ele.items[0].orderStatus.at(-1).type === 'delivered' &&
+              ele.items[0].orderStatus.at(-1).isCompleted === true
+            ) {
+              console.log('skip');
+            } else {
+              makeData.push({
+                ...ele,
+                items: [ele.items[0]],
+              });
+            }
+          }
+        });
         return resolve({
           status: HttpStatus.OK,
-          data: getPaginatedItems(payload, queryStr.page, queryStr.limit),
+          data: getPaginatedItems(makeData, queryStr.page, queryStr.limit),
         });
       } catch (error) {
         console.log(error);
@@ -2496,13 +2530,47 @@ export class OrderService {
           const checkExists = await this.permissionReviewModel.exists({
             product: productId,
           });
+          await Promise.all([
+            this.userModel.updateOne(
+              {
+                _id: updated.at(0).user,
+              },
+              {
+                $inc: {
+                  'meta.totalBuy': 1,
+                },
+              },
+            ),
+            this.productModel.updateOne(
+              {
+                _id: productId,
+              },
+              {
+                $inc: {
+                  'meta.totalSold': 1,
+                },
+              },
+            ),
+            this.orderModel.updateOne(
+              {
+                items: { $elemMatch: { _id: orderId } },
+              },
+              {
+                $set: {
+                  'items.$.paymentStatus': 'completed',
+                },
+              },
+              {
+                new: true,
+              },
+            ),
+          ]);
 
           if (checkExists) {
             const checkUserExists = await this.permissionReviewModel.exists({
               product: productId,
               'list.user': updated.at(0).user,
             });
-
             if (!checkUserExists) {
               await this.permissionReviewModel.updateOne(
                 {
@@ -2636,7 +2704,7 @@ export class OrderService {
                   'items.$.isCancel': true,
                   'items.$.reason': reason,
                   'items.$.personCancel': 'seller',
-                  'item.$.paymentStatus': 'refund',
+                  'items.$.paymentStatus': 'refund',
                 },
               },
               {
@@ -2652,9 +2720,50 @@ export class OrderService {
               message: 'Order not found!',
             }),
           );
+        if (orderItemCod) {
+          await Promise.all(
+            orderItemCod?.items?.map((product) => {
+              return this.productModel.updateOne(
+                {
+                  _id: product.product,
+                  variants: {
+                    $elemMatch: {
+                      _id: product?.variant,
+                    },
+                  },
+                },
+                {
+                  $inc: {
+                    'variants.$.quantity': +Number(product?.quantity),
+                  },
+                },
+              );
+            }),
+          );
+        }
 
-        console.log('check1', orderItemCod);
-        console.log('check2', orderItemPaypal);
+        if (orderItemPaypal) {
+          await Promise.all(
+            orderItemCod?.items?.map((product) => {
+              return this.productModel.updateOne(
+                {
+                  _id: product.product,
+                  variants: {
+                    $elemMatch: {
+                      _id: product?.variant,
+                    },
+                  },
+                },
+                {
+                  $inc: {
+                    'variants.$.quantity': +Number(product?.quantity),
+                  },
+                },
+              );
+            }),
+          );
+        }
+
         return resolve({
           status: HttpStatus.OK,
           message: 'Your order is canceled successfully',
@@ -2672,6 +2781,381 @@ export class OrderService {
     });
   }
 
+  cancelOrderItemByShipper(
+    shipperId: string,
+    orderItemId: string,
+    reason: string,
+  ): Promise<INotifyResponse<any>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const shipper = await this.shippingModel
+          .findOne({
+            user: shipperId,
+          })
+          .select('_id code')
+          .lean();
+        if (!shipper)
+          return reject(
+            errorResponse({
+              status: HttpStatus.BAD_REQUEST,
+              message: 'Shipper not found',
+            }),
+          );
+        const permissionCancelOrder = new Map([
+          [
+            'rules',
+            [
+              {
+                'orderStatus.0.isCompleted': true,
+                'orderStatus.1.isCompleted': true,
+                'orderStatus.2.isCompleted': true,
+                'orderStatus.3.isCompleted': false,
+              },
+            ],
+          ],
+        ]);
+
+        const [orderItemCod, orderItemPaypal] = await Promise.all([
+          this.orderModel
+            .findOneAndUpdate(
+              {
+                $and: [
+                  {
+                    items: {
+                      $elemMatch: {
+                        $and: [
+                          { _id: orderItemId },
+                          { isCancel: false },
+                          { isDeleted: false },
+                          { shippingCode: shipper.code },
+                          { $or: permissionCancelOrder.get('rules') },
+                        ],
+                      },
+                    },
+                  },
+                  {
+                    paymentType: 'cod',
+                  },
+                ],
+              },
+              {
+                $set: {
+                  'items.$.isCancel': true,
+                  'items.$.reason': reason,
+                  'items.$.personCancel': 'shipper',
+                },
+              },
+              {
+                new: true,
+              },
+            )
+            .lean(),
+          this.orderModel
+            .findOneAndUpdate(
+              {
+                $and: [
+                  {
+                    items: {
+                      $elemMatch: {
+                        $and: [
+                          { _id: orderItemId },
+                          { isCancel: false },
+                          { isDeleted: false },
+                          { shippingCode: shipper.code },
+                          {
+                            $or: permissionCancelOrder.get('rules'),
+                          },
+                        ],
+                      },
+                    },
+                  },
+                  {
+                    paymentType: 'paypal',
+                  },
+                ],
+              },
+              {
+                $set: {
+                  'items.$.isCancel': true,
+                  'items.$.reason': reason,
+                  'items.$.personCancel': 'shipper',
+                  'items.$.paymentStatus': 'refund',
+                },
+              },
+              {
+                new: true,
+              },
+            )
+            .lean(),
+        ]);
+        if (!orderItemCod && !orderItemPaypal)
+          return reject(
+            errorResponse({
+              status: HttpStatus.NOT_FOUND,
+              message: 'Order not found!',
+            }),
+          );
+
+        if (orderItemCod) {
+          await Promise.all(
+            orderItemCod?.items?.map((product) => {
+              return this.productModel.updateOne(
+                {
+                  _id: product.product,
+                  variants: {
+                    $elemMatch: {
+                      _id: product?.variant,
+                    },
+                  },
+                },
+                {
+                  $inc: {
+                    'variants.$.quantity': +Number(product?.quantity),
+                  },
+                },
+              );
+            }),
+          );
+        }
+
+        if (orderItemPaypal) {
+          await Promise.all(
+            orderItemCod?.items?.map((product) => {
+              return this.productModel.updateOne(
+                {
+                  _id: product.product,
+                  variants: {
+                    $elemMatch: {
+                      _id: product?.variant,
+                    },
+                  },
+                },
+                {
+                  $inc: {
+                    'variants.$.quantity': +Number(product?.quantity),
+                  },
+                },
+              );
+            }),
+          );
+        }
+
+        return resolve({
+          status: HttpStatus.OK,
+          message: 'Your order is canceled successfully',
+          data: null,
+        });
+      } catch (error) {
+        console.log(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  cancelOrderItemByShipperClientReject(
+    shipperId: string,
+    orderItemId: string,
+    reason: string,
+  ): Promise<INotifyResponse<any>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const shipper = await this.shippingModel
+          .findOne({
+            user: shipperId,
+          })
+          .select('_id code')
+          .lean();
+        if (!shipper)
+          return reject(
+            errorResponse({
+              status: HttpStatus.BAD_REQUEST,
+              message: 'Shipper not found',
+            }),
+          );
+        const permissionCancelOrder = new Map([
+          [
+            'rules',
+            [
+              {
+                'orderStatus.0.isCompleted': true,
+                'orderStatus.1.isCompleted': true,
+                'orderStatus.2.isCompleted': true,
+                'orderStatus.3.isCompleted': false,
+              },
+            ],
+          ],
+        ]);
+
+        const [orderItemCod, orderItemPaypal] = await Promise.all([
+          this.orderModel
+            .findOneAndUpdate(
+              {
+                $and: [
+                  {
+                    items: {
+                      $elemMatch: {
+                        $and: [
+                          { _id: orderItemId },
+                          { isCancel: false },
+                          { isDeleted: false },
+                          { shippingCode: shipper.code },
+                          { $or: permissionCancelOrder.get('rules') },
+                        ],
+                      },
+                    },
+                  },
+                  {
+                    paymentType: 'cod',
+                  },
+                ],
+              },
+              {
+                $set: {
+                  'items.$.isCancel': true,
+                  'items.$.reason': reason,
+                  'items.$.personCancel': 'shipper',
+                  'items.$.isClientReject': true,
+                },
+              },
+              {
+                new: true,
+              },
+            )
+            .lean(),
+          this.orderModel
+            .findOneAndUpdate(
+              {
+                $and: [
+                  {
+                    items: {
+                      $elemMatch: {
+                        $and: [
+                          { _id: orderItemId },
+                          { isCancel: false },
+                          { isDeleted: false },
+                          { shippingCode: shipper.code },
+                          {
+                            $or: permissionCancelOrder.get('rules'),
+                          },
+                        ],
+                      },
+                    },
+                  },
+                  {
+                    paymentType: 'paypal',
+                  },
+                ],
+              },
+              {
+                $set: {
+                  'items.$.isCancel': true,
+                  'items.$.reason': reason,
+                  'items.$.personCancel': 'shipper',
+                  'items.$.isClientReject': true,
+                },
+              },
+              {
+                new: true,
+              },
+            )
+            .lean(),
+        ]);
+        if (!orderItemCod && !orderItemPaypal)
+          return reject(
+            errorResponse({
+              status: HttpStatus.NOT_FOUND,
+              message: 'Order not found!',
+            }),
+          );
+
+        if (orderItemCod) {
+          await Promise.all(
+            orderItemCod?.items?.map((product) => {
+              return this.productModel.updateOne(
+                {
+                  _id: product.product,
+                  variants: {
+                    $elemMatch: {
+                      _id: product?.variant,
+                    },
+                  },
+                },
+                {
+                  $inc: {
+                    'variants.$.quantity': +Number(product?.quantity),
+                  },
+                },
+              );
+            }),
+          );
+        }
+
+        if (orderItemPaypal) {
+          await Promise.all(
+            orderItemPaypal?.items?.map((product) => {
+              return this.productModel.updateOne(
+                {
+                  _id: product.product,
+                  variants: {
+                    $elemMatch: {
+                      _id: product?.variant,
+                    },
+                  },
+                },
+                {
+                  $inc: {
+                    'variants.$.quantity': +Number(product?.quantity),
+                  },
+                },
+              );
+            }),
+          );
+        }
+        const user = orderItemPaypal
+          ? orderItemPaypal.user
+          : orderItemPaypal
+          ? orderItemPaypal.user
+          : '';
+
+        if (!user)
+          return reject(
+            errorResponse({
+              status: HttpStatus.BAD_REQUEST,
+              message: 'User not found',
+            }),
+          );
+        await this.userModel.updateOne(
+          {
+            _id: user,
+          },
+          {
+            $inc: {
+              'meta.totalOrderReject': 1,
+            },
+          },
+        );
+
+        return resolve({
+          status: HttpStatus.OK,
+          message: 'Your order is canceled successfully',
+          data: null,
+        });
+      } catch (error) {
+        console.log(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
   // shipper processing orders
   getOrdersShipping(
     shipperId: string,
@@ -2730,6 +3214,7 @@ export class OrderService {
                     name: 1,
                     productPictures: 1,
                     quantity: 1,
+                    variants: 1,
                   },
                 },
               ],
@@ -2787,6 +3272,187 @@ export class OrderService {
         return resolve({
           status: HttpStatus.OK,
           data: getPaginatedItems(payload, page, limit),
+        });
+      } catch (error) {
+        console.log(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  getAllOrdersCompletedBySeller(
+    sellerId: string,
+    page: number,
+    limit: number,
+  ): Promise<INotifyResponse<any>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const ordered = await this.orderModel
+          .find({
+            $and: [
+              { 'items.seller': sellerId },
+              { 'items.orderStatus.3.isCompleted': true },
+            ],
+          })
+          .populate({
+            path: 'items.product',
+          })
+          .populate({
+            path: 'user',
+            select: 'info _id meta',
+          })
+          .lean();
+        if (_.isEmpty(ordered)) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.NOT_FOUND,
+              message: 'order done empty!',
+            }),
+          );
+        }
+        let totalEarn = 0;
+
+        const makeData: any = [];
+        ordered.forEach((order) => {
+          order.items.forEach((item: any) => {
+            if (
+              item.orderStatus.at(-1).type === 'delivered' &&
+              item.orderStatus.at(-1).isCompleted === true
+            ) {
+              totalEarn += Number(item.totalPaid - item.shippingCost);
+              makeData.push({
+                ...order,
+                items: [item],
+              });
+            }
+          });
+        });
+
+        return resolve({
+          status: HttpStatus.OK,
+          data: {
+            ...getPaginatedItems(makeData, page, limit),
+            totalEarn: totalEarn.toFixed(2),
+          },
+        });
+      } catch (error) {
+        console.log(error);
+        return reject(
+          errorResponse({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: Message.internal_server_error,
+          }),
+        );
+      }
+    });
+  }
+
+  reviewProductByUser({
+    userId,
+    productId,
+    rating,
+    comment,
+  }: any): Promise<INotifyResponse<any>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const [product, permission] = await Promise.all([
+          this.productModel
+            .findOne({
+              _id: productId,
+            })
+            .lean(),
+          this.permissionReviewModel
+            .findOne({
+              $and: [
+                { product: productId },
+                {
+                  list: {
+                    $elemMatch: {
+                      user: userId,
+                    },
+                  },
+                },
+              ],
+            })
+            .lean(),
+        ]);
+
+        if (!product) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.NOT_FOUND,
+              message: 'Product not found',
+            }),
+          );
+        }
+
+        if (!permission) {
+          return reject(
+            errorResponse({
+              status: HttpStatus.FORBIDDEN,
+              message: 'Please buy the product to review',
+            }),
+          );
+        }
+        const reviewAlready = product?.reviews?.find(
+          (user) => user.user.toString() === userId,
+        );
+
+        if (reviewAlready) {
+          await this.productModel.findOneAndUpdate(
+            {
+              $and: [
+                { _id: productId },
+                {
+                  reviews: {
+                    $elemMatch: {
+                      user: userId,
+                    },
+                  },
+                },
+              ],
+            },
+            {
+              $set: {
+                'reviews.$.rating': rating,
+                'reviews.$.comment': comment,
+                'reviews.$.updatedAt': Date.now(),
+              },
+            },
+            { new: true },
+          );
+
+          return resolve({
+            status: HttpStatus.OK,
+            message: 'Review successfully',
+            data: null,
+          });
+        }
+
+        await this.productModel.findOneAndUpdate(
+          {
+            _id: productId,
+          },
+          {
+            $push: {
+              reviews: {
+                user: userId,
+                rating: rating,
+                comment: comment,
+              },
+            },
+          },
+          { new: true, upsert: true },
+        );
+        return resolve({
+          status: HttpStatus.OK,
+          message: 'Review successfully',
+          data: null,
         });
       } catch (error) {
         console.log(error);

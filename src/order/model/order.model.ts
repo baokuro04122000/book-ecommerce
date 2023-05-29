@@ -80,6 +80,10 @@ const OrderSchema = new mongoose.Schema(
           type: Boolean,
           default: false,
         },
+        isClientReject: {
+          type: Boolean,
+          default: false,
+        },
         seller: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'sellers',

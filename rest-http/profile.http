@@ -1,0 +1,32 @@
+
+@HOST = http://localhost:8000/api/v1
+
+@TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDYwOTBhOTJkZjdhN2RhOGUyZTk1ZWEiLCJyb2xlIjoidXNlciIsInRpbWVDcmVhdGVkIjoxNjg0OTk5NDkzMjgzLCJpYXQiOjE2ODQ5OTk0OTMsImV4cCI6MTY4NTAwMzA5M30.bwhoomyfheLUYQa0rZrDe3RDyLpU0jHARtXfQrO7mKg
+
+### login
+POST {{HOST}}/auth/login
+Content-Type: application/json
+
+{
+  "email":"test01@yopmail.com",
+  "password":"hello123@"
+}
+
+
+### get profile
+GET {{HOST}}/user/profile
+Authorization: Bearer {{TOKEN}}
+
+{}
+
+### update profile
+PUT {{HOST}}/user/profile
+Authorization: Bearer {{TOKEN}}
+Content-Type: application/json
+
+{
+  "birthDate": "05/12/2000",
+  "avatar":"https://e7.pngegg.com/pngimages/799/987/png-clipar…-icon-design-avatar-heroes-computer-wallpaper.png",
+  "gender":"male",
+  "name":"Toe"
+}

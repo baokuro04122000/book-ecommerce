@@ -12,6 +12,8 @@ import {
   DATABASE_CONNECTION,
   DatabaseModule,
 } from '../database/mongodb.module';
+import { ProfileController } from './controller/profile.controller';
+import { ProfileService } from './service/profile.service';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import {
   ],
   providers: [
     AuthService,
+    ProfileService,
     {
       provide: USER_MODEL,
       useFactory: (connect: Connection) => connect.model('users', UserSchema),
@@ -44,6 +47,6 @@ import {
     },
     JwtStrategy,
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, ProfileController],
 })
 export class AuthModule {}

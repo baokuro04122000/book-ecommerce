@@ -36,7 +36,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDI3Z
 
 ### get all products
 // have filter and pagination
-GET {{HOST}}/list?page=1&limit=8&name=Borges&author=Borges
+GET {{HOST}}/list?page=1&limit=5&sellerId=6427e06064221759762dcadc&order=desc
 
 ### get product by slug
 GET {{HOST}}/Let-The-Good-Times-Roll-Up-hcUMFC6m0

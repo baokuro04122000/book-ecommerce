@@ -1,13 +1,13 @@
 @HOST=http://localhost:8000/api/v1
 
-@Token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDY3N2MxNjdhYzk5ZTAyM2VhZjAyMTgiLCJyb2xlIjoic2hpcHBlciIsInRpbWVDcmVhdGVkIjoxNjg0Njg3OTY4NzY2LCJpYXQiOjE2ODQ2ODc5NjgsImV4cCI6MTY4NDY5MTU2OH0.6I4Uf44WPmVRPEcuQYjAcNv4Xj0upaBWPjaU2X5Q0Zw
+@Token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDYwOTBhOTJkZjdhN2RhOGUyZTk1ZWEiLCJyb2xlIjoidXNlciIsInRpbWVDcmVhdGVkIjoxNjg0OTYwNjExODkxLCJpYXQiOjE2ODQ5NjA2MTIsImV4cCI6MTY4NDk2NDIxMn0.FT4ZL6Zv_rMliB1dc3bts3_gES0rXSWT4j3a5j2vuBo
 
 ### login
 POST {{HOST}}/auth/login
 Content-Type: application/json
 
 {
-  "email":"shipper@shipper.com",
+  "email":"test01@yopmail.com",
   "password":"hello123@"
 }
 
@@ -65,3 +65,51 @@ Authorization: Bearer {{Token}}
 ### get all order shipping by shipper
 GET {{HOST}}/order/shipper/get-order
 Authorization: Bearer {{Token}}
+
+### update status order
+PUT {{HOST}}/order/shipper/update-order
+Authorization: Bearer {{Token}}
+Content-Type: application/json
+
+{
+  "orderItemId": "646a1c9ee79958393dc1d295"
+}
+
+### cancel orderItemId by shipper
+PUT {{HOST}}/order/shipper/cancel-order
+Authorization: Bearer {{Token}}
+Content-Type: application/json
+
+{
+  "orderItemId": "",
+  "reason": ""
+}
+
+### reject orderItemId by user
+PUT {{HOST}}/order/shipper/reject-order
+Authorization: Bearer {{Token}}
+Content-Type: application/json
+
+{
+  "orderItemId":"",
+  "reason":""
+}
+
+### get all order done by seller
+GET {{HOST}}/order/seller/done
+Authorization: Bearer {{Token}}
+
+### get all order completed by user
+GET {{HOST}}/order/all-done
+Authorization: Bearer {{Token}}
+
+### review by user
+POST {{HOST}}/product/user/review
+Authorization: Bearer {{Token}}
+Content-Type: application/json
+
+{
+  "productId":"6461db631a8f4bca357fc084",
+  "rating":5,
+  "comment":"The nice book, you should try it!"
+}

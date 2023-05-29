@@ -132,15 +132,15 @@ export class ProductController {
 
   @UseGuards(AuthGuard('jwt'))
   @Delete('delete/:id')
-  async delete(@Param() id: string, @Req() req, @Res() res) {
-    const { userId, role } = req.user;
+  async delete(@Param('id') id: string, @Req() req, @Res() res) {
+    const { sellerId, role } = req.user;
     if (role !== 'seller') {
       return res
         .status(HttpStatus.UNAUTHORIZED)
         .json(new HttpException('Bad request', HttpStatus.UNAUTHORIZED));
     }
     try {
-      const payload = await this.productService.deleteProductById(id, userId);
+      const payload = await this.productService.deleteProductById(id, sellerId);
       return res.status(payload.status).json(payload);
     } catch (error) {
       return res.status(error.status).json(error);

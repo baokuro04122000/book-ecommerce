@@ -17,6 +17,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { OrderService } from '../service/order.service';
+import { get } from 'http';
 
 @Controller('api/v1')
 export class OrderController {
@@ -134,7 +135,7 @@ export class OrderController {
         payerId,
         paymentId,
       );
-      return res.redirect('http://localhost:3000');
+      return res.redirect('http://localhost:3000/checkout/ordered');
     } catch (error) {
       console.log(error);
       return res.status(error.status).json(error);
@@ -146,7 +147,7 @@ export class OrderController {
     try {
       const { token } = req.query;
       const payload = await this.orderService.paypalPaymentCancel(token);
-      return res.redirect('http://localhost:3000');
+      return res.redirect('http://localhost:3000/checkout/cancelled');
     } catch (error) {
       console.log(error);
       return res.status(error.status).json(error);
@@ -188,10 +189,10 @@ export class OrderController {
   @Put('/order/seller/update-status')
   async sellerUpdateStatusOrder(@Res() res, @Req() req) {
     try {
-      const { orderId } = req.body;
+      const { orderItemId } = req.body;
       const payload = await this.orderService.updateStatusOrderBySeller(
         req.user.sellerId,
-        orderId,
+        orderItemId,
       );
       return res.status(payload.status).json(payload);
     } catch (error) {
@@ -312,6 +313,109 @@ export class OrderController {
         page,
         limit,
       );
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Put('/order/shipper/update-order')
+  async updateStatusOrdersByShipper(@Res() res, @Req() req) {
+    try {
+      const { orderItemId } = req.body;
+      const payload = await this.orderService.updateStatusOrderByShipper(
+        req.user.userId,
+        orderItemId,
+      );
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Put('/order/shipper/cancel-order')
+  async cancelOrdersByShipper(@Res() res, @Req() req) {
+    try {
+      const { orderItemId, reason } = req.body;
+      const payload = await this.orderService.cancelOrderItemByShipper(
+        req.user.userId,
+        orderItemId,
+        reason,
+      );
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Put('/order/shipper/reject-order')
+  async cancelRejectOrdersByShipper(@Res() res, @Req() req) {
+    try {
+      const { orderItemId, reason } = req.body;
+      const payload =
+        await this.orderService.cancelOrderItemByShipperClientReject(
+          req.user.userId,
+          orderItemId,
+          reason,
+        );
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/order/seller/done')
+  async allOrderDoneSeller(@Res() res, @Req() req) {
+    try {
+      const { page, limit } = req.query;
+      const payload = await this.orderService.getAllOrdersCompletedBySeller(
+        req.user.sellerId,
+        page,
+        limit,
+      );
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/order/all-done')
+  async allOrderDoneUser(@Res() res, @Req() req) {
+    try {
+      const { page, limit } = req.query;
+      const payload = await this.orderService.getAllOrdersCompletedByUser(
+        req.user.userId,
+        page,
+        limit,
+      );
+      return res.status(payload.status).json(payload);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status).json(error);
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/product/user/review')
+  async userReview(@Res() res, @Req() req) {
+    try {
+      const { productId, rating, comment } = req.body;
+      const payload = await this.orderService.reviewProductByUser({
+        userId: req.user.userId,
+        productId: productId,
+        rating: rating,
+        comment: comment,
+      });
       return res.status(payload.status).json(payload);
     } catch (error) {
       console.log(error);

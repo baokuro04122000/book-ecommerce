@@ -74,15 +74,17 @@ export class ProductService {
           this.productModel,
           query,
         ) // (1)
-          .search()
           .filter()
-          .query.countDocuments();
+          .search()
+          .query.sort({ createdAt: -1 })
+          .countDocuments();
 
         const apiFeatures = new APIFeatures(this.productModel, query) // (2)
           .search()
-          .filter()
           .pagination(query.limit)
-          .query.populate({
+          .filter()
+          .query.sort({ createdAt: -1 })
+          .populate({
             path: 'sellerId',
             select: 'info',
           })
@@ -136,6 +138,10 @@ export class ProductService {
           .populate({
             path: 'category',
             select: 'name categoryImage slug',
+          })
+          .populate({
+            path: 'reviews.user',
+            select: 'info',
           })
           .lean();
         if (!product) {
@@ -506,11 +512,9 @@ export class ProductService {
   ): Promise<INotifyResponse<null>> {
     return new Promise(async (resolve, reject) => {
       try {
-        const product = await this.productModel.findOne({
-          $and: [
-            { _id: new mongoose.Types.ObjectId(id) },
-            { sellerId: sellerId },
-          ],
+        console.log('sellerId', sellerId);
+        const product: any = await this.productModel.findOne({
+          $and: [{ _id: id }, { sellerId: sellerId }],
         });
         if (!product) {
           return reject(
