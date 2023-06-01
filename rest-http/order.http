@@ -1,13 +1,13 @@
 @HOST=http://localhost:8000/api/v1
 
-@Token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDYwOTBhOTJkZjdhN2RhOGUyZTk1ZWEiLCJyb2xlIjoidXNlciIsInRpbWVDcmVhdGVkIjoxNjg0OTYwNjExODkxLCJpYXQiOjE2ODQ5NjA2MTIsImV4cCI6MTY4NDk2NDIxMn0.FT4ZL6Zv_rMliB1dc3bts3_gES0rXSWT4j3a5j2vuBo
+@Token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDc4ZGUwNmE5NjJhMzM0NjE3NTk5MDkiLCJyb2xlIjoidXNlciIsInRpbWVDcmVhdGVkIjoxNjg1NjQ0NTgxODA2LCJpYXQiOjE2ODU2NDQ1ODEsImV4cCI6MTY4NTY1NTM4MX0.GQeBwFHndumubhZ2Ukn3lgIMXZdt08V4e-3VGteUf38
 
 ### login
 POST {{HOST}}/auth/login
 Content-Type: application/json
 
 {
-  "email":"test01@yopmail.com",
+  "email":"demo02@yopmail.com",
   "password":"hello123@"
 }
 

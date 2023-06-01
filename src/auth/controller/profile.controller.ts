@@ -34,7 +34,7 @@ export class ProfileController {
 
   @UseGuards(AuthGuard('jwt'))
   @Put('/user/profile')
-  async updateProfile(@Req() req, @Res() res, @Body() body: UpdateUserDto) {
+  async updateProfile(@Req() req, @Res() res, @Body() body: any) {
     try {
       const { avatar, gender, name, birthDate } = req.body;
       const payload = await this.usersService.updateProfile({

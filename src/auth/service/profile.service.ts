@@ -93,7 +93,8 @@ export class ProfileService {
           {
             $set: {
               'info.name': profile.name,
-              'info.avatar': profile.avatar,
+              'info.avatar':
+                'https://cdn3.vectorstock.com/i/1000x1000/70/12/school-boy-avatar-vector-45067012.jpg',
               'info.birthDay': profile.birthDay,
               'info.gender': profile.gender,
             },

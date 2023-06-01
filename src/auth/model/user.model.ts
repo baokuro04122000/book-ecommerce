@@ -37,7 +37,11 @@ const UserSchema = new mongoose.Schema(
       },
       birthDay: { type: String },
       language: { type: String, default: 'en' },
-      avatar: { type: String },
+      avatar: {
+        type: String,
+        default:
+          'https://i2.wp.com/avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default-avatar-2.png?ssl=1',
+      },
     },
     status: {
       type: String,

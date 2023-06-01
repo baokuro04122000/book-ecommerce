@@ -1444,6 +1444,7 @@ export class OrderService {
           });
           payload = [...payload, ...reservations];
         });
+
         return resolve({
           status: HttpStatus.OK,
           data: getPaginatedItems(payload, page, limit),
@@ -2147,8 +2148,10 @@ export class OrderService {
           return;
         });
 
+        console.log('check::', payload);
+
         const x = _.uniqBy(payload, (obj) => {
-          return obj.product.name;
+          return obj._id;
         });
         const makeData: any = [];
         x.forEach((ele) => {
@@ -2744,7 +2747,7 @@ export class OrderService {
 
         if (orderItemPaypal) {
           await Promise.all(
-            orderItemCod?.items?.map((product) => {
+            orderItemPaypal?.items?.map((product) => {
               return this.productModel.updateOne(
                 {
                   _id: product.product,
@@ -3118,8 +3121,8 @@ export class OrderService {
         }
         const user = orderItemPaypal
           ? orderItemPaypal.user
-          : orderItemPaypal
-          ? orderItemPaypal.user
+          : orderItemCod
+          ? orderItemCod.user
           : '';
 
         if (!user)

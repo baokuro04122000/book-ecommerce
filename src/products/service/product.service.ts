@@ -74,7 +74,7 @@ export class ProductService {
           this.productModel,
           query,
         ) // (1)
-          .filter()
+          //.filter()
           .search()
           .query.sort({ createdAt: -1 })
           .countDocuments();
@@ -82,7 +82,7 @@ export class ProductService {
         const apiFeatures = new APIFeatures(this.productModel, query) // (2)
           .search()
           .pagination(query.limit)
-          .filter()
+          //.filter()
           .query.sort({ createdAt: -1 })
           .populate({
             path: 'sellerId',
